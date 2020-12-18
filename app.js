@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const passport = require('./Utils/pass');
 const rootRoute = require('./Routes/rootRoute');
-const picRoute = require('./Routes/picRoute');
+const mediaRoute = require('./Routes/mediaRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
@@ -31,20 +31,21 @@ app.use('/Thumbnails', express.static('Thumbnails'));
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 if (process.env.NODE_ENV === 'production') {
   require('./production')(app, process.env.PORT);
+  console.log('App started on production server');
 } else {
   require('./localhost')(app, process.env.HTTPS_PORT, process.env.HTTP_PORT);
+  console.log('App started on localhost.');
 }
 
 app.use('/', rootRoute);
 app.use('/auth', authRoute);
-app.use('/notokenpic', picRoute);
+app.use('/notokenpic', mediaRoute);
 app.use('/notokenlikes', noTokenLikeRoute);
 app.use('/notokencomments', commentRoute);
-app.use('/pic', passport.authenticate('jwt', {session: false}), picRoute);
+app.use('/media', passport.authenticate('jwt', {session: false}), mediaRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}),
     commentRoute);
 
-//app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 

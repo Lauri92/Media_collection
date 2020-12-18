@@ -1,159 +1,174 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:https="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
-    <title>Wildlife Collection</title>
-    <link rel="stylesheet" href="css/style1.css">
-    <link rel="stylesheet" href="css/card.css">
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="stylesheet" href="css/map.css">
-    <link rel="stylesheet" href="css/profileInformation.css">
-    <link rel="stylesheet" href="css/search.css">
-    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+    <title>Media Collection</title>
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700&family=Roboto+Condensed:wght@100;200;300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet'/>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/smallcard.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/2d155bb92d.js" crossorigin="anonymous"></script>
 
 </head>
 <body>
-<div class="wrapper">
-    <div class="nav">
-        <div class="logo" style="cursor: pointer">
-            <h4>Wildlife Collection</h4>
-        </div>
-        <div class="links">
-            <a class="navRegister"></a>
-            <a class="navLogin"></a>
-        </div>
-        <div class="otherLinks">
-            <a class="logOut"></a>
-            <a class="frontPage"></a>
-            <a class="profile"></a>
-        </div>
-    </div>
 
-    <!-- landing page -->
 
-    <div class="search">
-        <form class="searchForm">
-            <input type="text" id="search-input" name="comment" pattern=".{3,}" placeholder="Search for photos..." required
-                   oninvalid="this.setCustomValidity('Input has to be atleast 3 characters long')"
-                   oninput="this.setCustomValidity('')">
-            <button type="submit"><i class="fa fa-search"></i></button>
-        </form>
-        <div class="getPics">
-            <p class="latestPics">Latest</p>
-            <p class="mostlikedPics">Most Liked</p>
-        </div>
-    </div>
+<!-- Top navbar-->
+<nav class="navbar">
+    <ul class="navbar-nav">
+        <li class="nav-item">Media Collection</li>
+        <li class="nav-item" id="add-media-button"><i class="fas fa-plus"></i></li>
+        <li class="nav-item" id="register-button">Register</li>
+        <li class="nav-item" id="login-button">Login</li>
+        <li class="nav-item" id="logout-button">Log Out</li>
+        <li class="nav-item" id="profile-button">My profile</li>
+    </ul>
+</nav>
 
-    <div class="jotain">
-        <div class="userInfo">
-            <h1></h1>
-            <p>Images 52</p>
-        </div>
-    </div>
-    <div class="joku">
-        <div class="type">
-            <p class="photos">Photo</p>
-            <p class="slash">/</p>
-            <p class="videos">Video</p>
-        </div>
-        <div class="buttonHolder">
-            <button class="addImage">ADD IMAGE</button>
-        </div>
-    </div>
+<main>
 
-    <h4 class="entiia">LATEST</h4>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at lorem velit. Praesent at ipsum ac nunc
+        facilisis luctus id ut eros. Praesent a quam lobortis nisl rhoncus scelerisque ut sed justo. Lorem ipsum dolor
+        sit amet, consectetur adipiscing elit. Aliquam erat volutpat. Nullam sed vehicula arcu. Mauris convallis
+        interdum justo luctus mollis. Phasellus gravida condimentum velit blandit ullamcorper. Aenean tempus felis vitae
+        nunc vestibulum accumsan. Integer quis pretium erat. Pellentesque eu enim egestas, fringilla lacus at,
+        vestibulum diam. Praesent sed mauris turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+        posuere cubilia curae; Cras ultrices eros nunc, sed pulvinar augue finibus eget. Etiam vel sem lorem. Maecenas
+        et laoreet velit.<br><br></p>
+
     <div class="container">
-        <div class="galleryArea">
-            <!--All the picture comes in here-->
-        </div>
-    </div>
-</div>
-<div class="card-container" >
-    <div class="card">
-        <div class="background">
-            <div class="gradients">
-                <div class="gradient">
-                    <!--cardModel of clicked photo comes here-->
+        <div class="cards">
+            <div class="card">
+                <img src="https://placekitten.com/900/900" alt="cat">
+                <div class="info">
+                    <h1>Heading</h1>
+                    <p>LOREM LOREM</p>
                 </div>
             </div>
-            <a class="map"><i class="fas fa-map-marker-alt"></i></a>
-        </div>
-        <div class="info">
-            <div class="header">
-                <div>
-                    <!--cardModel username-->
-                </div>
 
-            </div>
-            <div class="des">
-                <div class="description">
-                    </p>
-                </div>
-                <div class="comments">
-                    <!--cardModel comments-->
+            <div class="card">
+                <img src="https://placekitten.com/700/700" alt="cat">
+                <div class="info">
+                    <h1>Heading</h1>
+                    <p>LOREM LOREM</p>
                 </div>
             </div>
-            <div class="likeSection">
-                <!--cardModel date and likes-->
+
+            <div class="card">
+                <img src="https://placekitten.com/900/900" alt="cat">
+                <div class="info">
+                    <h1>Heading</h1>
+                    <p>LOREM LOREM</p>
+                </div>
             </div>
-            <div class="example">
+            <div class="card">
+                <img src="https://placekitten.com/700/700" alt="cat">
+                <div class="info">
+                    <h1>Heading</h1>
+                    <p>LOREM LOREM</p>
+                </div>
             </div>
-            <a class="exit"><i class="fas fa-times"></i></a>
-            <div class="deleteButton" style="cursor: pointer"></div>
         </div>
     </div>
-</div>
-<div class="map-container">
-    <div class="bigMap" id="map">
-        <a class="exitMap"><i class="fas fa-times"></i></a>
-    </div>
-</div>
-<div class="hero">
-    <div class="form-box">
-        <div class="button-box">
-            <div id="btn"></div>
-            <button type="button" class="toggle-btn">Log in</button>
-            <button type="button" class="toggle-btn">Register</button>
+</main>
+
+<!--Register modal starts here-->
+<div class="register-modal" id="register-modal">
+    <div class="register-container">
+        <div class="header">
+            <h2>Create Account</h2>
+            <i class="fas fa-times"></i>
         </div>
-        <form id="login" class="input-group">
-            <input type="text" name="username" class="input-field" placeholder="Email" required>
-            <input type="password" name="password" class="input-field" placeholder="Enter Password" required>
-            <input type="checkbox" class="check-box"><span>Remember Password</span>
-            <button type="submit" class="submit-btn">Log in</button>
-        </form>
-        <form id="register" class="input-group">
-            <input type="text" name="name" pattern=".{3,}" class="input-field" placeholder="Firstname" required>
-            <input type="text" name="lastname" pattern=".{3,}" class="input-field" placeholder="LastName" required>
-            <input type="email" name="email" class="input-field" placeholder="Email" required>
-            <input type="password" name="password" pattern="(?=.*[A-Z]).{8,}" class="input-field" placeholder="Enter Password" required>
-            <input type="checkbox" class="check-box" required><span>I agree to the terms & conditions</span>
-            <button type="submit" class="submit-btn">Register</button>
-        </form>
-        <a class="loginExit"><i class="fas fa-times"></i></a>
-    </div>
-</div>
-<div class="addImageContainer">
-    <div class="addImageForm">
-        <h2>ADD IMAGE</h2>
-        <form enctype="multipart/form-data" id="addImageId" class="addImageInput">
-            <input type="file" name="pic" id="file" class="addImageInputField" data-multiple-caption="{count} files selected"  accept="image/*, video/*">
-            <label for="file" id="fileLabel">CHOOSE FILE<br>max: 50Mb</label>
-            <div>
-                <img id="output" alt="No Images Chosen" width="150px" height="150px" style="object-fit: cover; border: #3a3a3a 1px solid">
-                <textarea placeholder="Description" name="description" required="" class="addImageTextarea"
-                          form="addImageId" style="overflow: hidden; resize: none;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+        <form id="register-form" class="form">
+            <div class="form-control">
+                <label for="firstname">First name</label>
+                <input type="text" name="name" placeholder="First name" id="firstname"/>
+                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
+                <small>Error message</small>
             </div>
-            <button type="submit">UPLOAD</button>
+            <div class="form-control">
+                <label for="firstname">Last name</label>
+                <input type="text" name="lastname" placeholder="Last name" id="lastname"/>
+                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
+                <small>Error message</small>
+            </div>
+            <div class="form-control">
+                <label for="firstname">Email</label>
+                <input type="email" name="email" placeholder="Email" id="email"/>
+                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
+                <small>Error message</small>
+            </div>
+            <div class="form-control">
+                <label for="firstname">Password</label>
+                <input type="password" name="password" placeholder="Password" id="password"/>
+                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
+                <small>Error message</small>
+            </div>
+            <div class="form-control">
+                <label for="firstname">Password check</label>
+                <input type="password" placeholder="Password two" id="password2"/>
+                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
+                <small>Error message</small>
+            </div>
+            <button>Submit</button>
         </form>
-        <a class="addImageExit"><i class="fas fa-times"></i></a>
     </div>
 </div>
-<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+
+
+<!-- Login modal starts here-->
+<div class="register-modal" id="login-modal">
+    <div class="register-container">
+        <div class="header">
+            <h2>Login</h2>
+            <i class="fas fa-times"></i>
+        </div>
+        <form id="login-form" class="form">
+            <div class="form-control">
+                <label>Email</label>
+                <input type="text" name="username" placeholder="Email" id="login-email"/>
+            </div>
+            <div class="form-control">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Password" id="login-password"/>
+            </div>
+            <button type="submit">Log In</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Add-media modal starts here-->
+<div class="register-modal" id="add-media-modal">
+    <div class="register-container">
+        <div class="header">
+            <h2>Publish media</h2>
+            <i class="fas fa-times"></i>
+        </div>
+        <form enctype="multipart/form-data" id="add-media-form" class="form">
+            <div class="form-control" id="description-form-control">
+                <label>Description</label>
+                <textarea type="text" name="description" placeholder="Sample description" required="" style="margin: 0;width: 100%;height: 10vh;"></textarea>
+            </div>
+            <div class="form-control">
+                <label>Choose a file, image or video<br>Max 50Mb</label>
+                <input id="img-input" type="file" name="pic" accept="image/*, video/*" placeholder="Choose file">
+                <img id="to-be-uploaded" alt="No Images Chosen">
+            </div>
+            <button type="submit">Publish</button>
+        </form>
+    </div>
+</div>
+
 <script src="Frontend/index.js"></script>
-<script src="./Frontend/serialize.js"></script>
+<script src="Frontend/serialize.js"></script>
 </body>
 </html>
-

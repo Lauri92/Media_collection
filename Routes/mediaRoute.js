@@ -1,7 +1,7 @@
 'use strict';
 //userRoute
 const express = require('express');
-const picController = require('../Controllers/picController');
+const mediaController = require('../Controllers/mediaController');
 const {body} = require('express-validator');
 const router = express.Router();
 const multer = require('multer');
@@ -37,39 +37,39 @@ const injectFile = (req, res, next) => {
 };
 
 // Get all media
-router.get('/media', picController.media_list_get);
+router.get('/media', mediaController.media_list_get);
 
 // Get all images
-router.get('/pics', picController.pic_list_get);
+router.get('/pics', mediaController.pic_list_get);
 
 // Get all videos
-router.get('/videos', picController.video_list_get);
+router.get('/videos', mediaController.video_list_get);
 
 // Get all media of user
-router.route('/userpics').get(picController.media_get_by_owner);
+router.route('/userpics').get(mediaController.media_get_by_owner);
 
 // Get specified media of user
-router.route('/specifiedusermedia/video').get(picController.chosen_media_get_by_owner)
-router.route('/specifiedusermedia/image').get(picController.chosen_media_get_by_owner)
+router.route('/specifiedusermedia/video').get(mediaController.chosen_media_get_by_owner)
+router.route('/specifiedusermedia/image').get(mediaController.chosen_media_get_by_owner)
 
 // Order all media by most likes
-router.get('/mostlikes', picController.media_list_get_by_most_likes);
+router.get('/mostlikes', mediaController.media_list_get_by_most_likes);
 
 // Order all media by search input
-router.get('/search/:input', picController.media_list_get_by_search);
+router.get('/search/:input', mediaController.media_list_get_by_search);
 
 // Get logged in users media by id
-router.get('/picuserid/:pic_id', picController.get_media_user_id);
+router.get('/picuserid/:pic_id', mediaController.get_media_user_id);
 
 // Delete media of user
-router.delete('/delete/:pic_id', picController.media_delete);
+router.delete('/delete/:pic_id', mediaController.media_delete);
 
 // Upload media
 router.route('/')
-    //.get(picController.pic_list_get)
+    //.get(mediaController.pic_list_get)
     .post(
         upload.single('pic'),
-        picController.make_thumbnail,
+        mediaController.make_thumbnail,
         injectFile,
         [
           body('description', 'must be at least three characters long and not contain bad words!').
@@ -77,7 +77,7 @@ router.route('/')
           //body('type', 'not image or video').contains('image'),
           body('type', 'not image or video').matches('(?=video|image)'),
         ],
-        picController.media_create);
+        mediaController.media_create);
 
 
 

@@ -20,7 +20,7 @@ const login = (req, res) => {
       if (err) {
         res.send(err);
       }
-      // generate a signed son web token with the contents of user object and return it in the response
+      // Generate a signed son web token with the contents of user object and return it in the response
       const token = jwt.sign(user, process.env.JWT);
       return res.json({user, token});
     });
@@ -38,10 +38,11 @@ const user_create_post = async (req, res, next) => {
 
     const available = status === undefined ? true : false;
 
-    // Email was available
     if (available) {
+      // Email was available
       // Check for errors in input
       if (!errors.isEmpty()) {
+        // Errors in validation
         console.log('user create error', errors);
         res.send(errors.array());
       } else {
@@ -73,8 +74,11 @@ const user_create_post = async (req, res, next) => {
 
 // Handle logout
 const logout = (req, res) => {
+  // Removes req.user
   req.logout();
-  res.json({message: 'logout'});
+
+  // TODO: Redirect to new page?
+  res.json({message: 'You have logged out'});
 };
 
 module.exports = {
