@@ -46,6 +46,12 @@
     object-fit: cover;
 }
 
+.big-card-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .close-button {
     position: absolute;
     top: 10%;
@@ -172,7 +178,7 @@
 }
 
 .big-card-info .fa-heart {
-    color: #b81717;
+    color: #8f8b8b;
 }
 
 .big-card-info .input-location {

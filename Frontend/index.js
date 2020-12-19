@@ -1,5 +1,6 @@
 'use strict';
 const url = 'https://localhost:8000';
+const body = document.body;
 
 // Buttons
 const registerButton = document.querySelector('#register-button');
@@ -123,7 +124,7 @@ Array.from(closeButtons).forEach(function(button) {
 // Login request
 // TODO: Add check for token before logging in
 loginForm.addEventListener('submit', async (e) => {
-  evt.preventDefault();
+  e.preventDefault();
 
   try {
     const data = await serializeJson(loginForm);
@@ -156,7 +157,7 @@ loginForm.addEventListener('submit', async (e) => {
 // Register request
 // TODO: Add check for token before registering
 registerForm.addEventListener('submit', async (e) => {
-  evt.preventDefault();
+  e.preventDefault();
 
   try {
     const validationPass = checkInputs();
@@ -254,6 +255,24 @@ const getComments = async (media_id) => {
     return await response.json();
   } catch (e) {
     console.log(e.message);
+  }
+};
+
+// Checks if the user has liked the photo already
+const getLikeStatus = async (media_id) => {
+  try {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch(url + '/likes/likestatus/' + media_id,
+        options);
+    return await response.json();
+  } catch (e) {
+    console.error(e.message);
   }
 };
 
@@ -433,6 +452,8 @@ const createSmallCards = async (media) => {
     console.log(`Clicked media with id of ${media.pic_id}`);
     try {
       await createBigCard(media);
+      // Avoid scrolling background while big card is open
+      body.style.overflow = 'hidden';
     } catch (e) {
       console.log(e.message);
     }
@@ -455,6 +476,7 @@ const createBigCard = async (media) => {
       bigCardMediaDiv.appendChild(bigCardImage);
     } else {
       bigCardVideo.src = url + '/Uploads/' + media.filename;
+      bigCardVideo.controls = true;
       bigCardMediaDiv.appendChild(bigCardVideo);
     }
 
@@ -483,20 +505,21 @@ const createBigCard = async (media) => {
     // All comments of certain media
     const allComments = document.querySelector('.comments');
 
-    // Update amount of likes next to chat bubble
-    // Target the container dedicated for likes in the HTML
-    const inputComments = document.querySelector('.input-comments');
+    // Update amount of comments next to chat bubble
+    // Target the container dedicated for comments in the HTML
+    //const inputComments = document.querySelector('.input-comments');
 
-    // Create span to hold the likes
-    const bigCardComments = document.createElement('span');
+    // Target span to hold the comments
+    const bigCardComments = document.querySelector('#big-card-comments');
+
 
     try {
       if (comments.length > 0) {
         bigCardComments.innerHTML = comments.length;
-        inputComments.insertBefore(bigCardComments, inputComments.firstChild);
+        //inputComments.insertBefore(bigCardComments, inputComments.firstChild);
       } else {
         bigCardComments.innerHTML = '0';
-        inputComments.insertBefore(bigCardComments, inputComments.firstChild);
+        //inputComments.insertBefore(bigCardComments, inputComments.firstChild);
       }
     } catch (e) {
       console.log(e.message);
@@ -539,10 +562,10 @@ const createBigCard = async (media) => {
     }
 
     // Target the container dedicated for likes in the HTML
-    const inputLikes = document.querySelector('.input-likes');
+    //const inputLikes = document.querySelector('.input-likes');
 
-    // Create span to hold the likes
-    const bigCardLikes = document.createElement('span');
+    // Target the span to hold the likes
+    const bigCardLikes = document.querySelector('#big-card-likes');
 
     try {
       // Get all likes of the media
@@ -551,38 +574,158 @@ const createBigCard = async (media) => {
       if (undefined === mediaLikes[0]) {
         // No likes
         bigCardLikes.innerHTML = '0';
-        inputLikes.insertBefore(bigCardLikes, inputLikes.firstChild);
+        //inputLikes.insertBefore(bigCardLikes, inputLikes.firstChild);
       } else {
         // Has likes
         bigCardLikes.innerHTML = `${mediaLikes[0].likes}`;
-        inputLikes.insertBefore(bigCardLikes, inputLikes.firstChild);
+        //inputLikes.insertBefore(bigCardLikes, inputLikes.firstChild);
       }
+
     } catch (e) {
       console.log(e.message);
     }
 
-    // Close big card and remove or clear by using innerHTML
+    // Check if the currently logged in user has already liked this piece of media
+    const hasLiked = await getLikeStatus(media.pic_id);
+    const heart = document.querySelector('.fa-heart');
+
+    if (hasLiked.result === true) {
+      //User has already liked this media
+      console.log('You have liked already.');
+      heart.style.color = '#B00923';
+    } else {
+      heart.addEventListener('click', likeMedia);
+      heart.style.cursor = 'pointer';
+    }
+
+    async function likeMedia() {
+      try {
+        const options = {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' +
+                sessionStorage.getItem('token'),
+          },
+        };
+        console.log(options);
+        // Fetch to give this media a like
+        const response = await fetch(
+            url + '/likes/incrementlike/' + media.pic_id, options);
+        const json = await response.json();
+        console.log('add like response', json);
+        heart.style.color = '#B00923';
+
+        // Update the UI, so fetch the new like amount from database
+        const mediaLikes = await getLikes(media.pic_id);
+        // Must be at least one like now so there is no need to check if the value is undefined
+        bigCardLikes.innerHTML = `${mediaLikes[0].likes}`;
+        document.querySelector();
+
+        // Remove evenlistener from heart
+        heart.removeEventListener('click', likeMedia);
+        // Cursor back to normal too
+        heart.style.cursor = 'auto';
+
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+
+    // Select commentForm to add eventlistener to post a comment
+    const commentForm = document.querySelector('.post-comment-form');
+
+    commentForm.addEventListener('submit', postComment);
+
+    async function postComment(e) {
+      e.preventDefault();
+      try {
+        const data = serializeJson(commentForm);
+        const fetchOptions = {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        };
+        console.log(fetchOptions);
+        const response = await fetch(
+            url + `/comments/${media.pic_id}`, fetchOptions);
+        const json = await response.json();
+        console.log('add comment response', json);
+
+
+        // Update the comment section to show users comment in real time withhout closing and opening card again
+        allComments.innerHTML = '';
+
+        // Get updated comments
+        const comments = await getComments(media.pic_id);
+
+        // Update the big card amount of likes, no need to check for undefined, there will be atleast 1 comment
+        // in this case
+        bigCardComments.innerHTML = comments.length;
+
+        // Iterate over all comments associated with this piece of media
+        for await (const comment of comments) {
+          const commentContainerDiv = document.createElement('div');
+          commentContainerDiv.className = 'comment-container';
+          const commentUserInputDiv = document.createElement('div');
+          commentUserInputDiv.className = 'comment-user-input';
+
+          // Create img element for comment owner profile pic
+          const commentOwnerProfilePic = document.createElement('img');
+          commentOwnerProfilePic.className = 'comment-profile-pic';
+          commentOwnerProfilePic.src = 'https://placekitten.com/250/250';
+          commentContainerDiv.appendChild(commentOwnerProfilePic);
+
+          // Create p element for user input date
+          const userInputDate = document.createElement('p');
+          userInputDate.className = 'user-input-date';
+          const postdate = comment.date.replace('T', ' ').
+              replace('Z', '').
+              slice(0, -7);
+          userInputDate.innerHTML = `${comment.name} ${comment.lastname} @ ${postdate}`;
+          commentUserInputDiv.appendChild(userInputDate);
+
+          // Create p element for user input message
+          const userInputMessage = document.createElement('p');
+          userInputMessage.className = 'user-input-message';
+          userInputMessage.innerHTML = `${comment.comment}`;
+          commentUserInputDiv.appendChild(userInputMessage);
+
+          // Append date and comment into single comment container
+          commentContainerDiv.appendChild(commentUserInputDiv);
+
+          // Append single comment content to all comments
+          allComments.appendChild(commentContainerDiv);
+
+        }
+
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+
+    // Close big card and remove childs or clear it by using innerHTML
     bigCardCloseButton.addEventListener('click', async (e) => {
       bigCardModal.style.display = 'none';
       // TODO: Remove created elements when closing the big card
-      if (media.mediatype === 'image') {
-        bigCardMediaDiv.removeChild(bigCardImage);
-      } else {
-        bigCardMediaDiv.removeChild(bigCardVideo);
-      }
+
+      bigCardMediaDiv.innerHTML = '';
       userInfoDiv.innerHTML = '';
       description.innerHTML = '';
-      inputComments.removeChild(bigCardComments);
+      bigCardComments.innerHTML = '';
+      bigCardLikes.innerHTML = '';
 
-      // Get every comment posted to media
-      const commentsToBeRemoved = document.getElementsByClassName('comments');
-      // Iterate over every comment
-      Array.from(commentsToBeRemoved).forEach((comment) => {
-        comment.innerHTML = '';
-      });
+      //const allComments = document.querySelector('.comments')
+      allComments.innerHTML = '';
 
-      inputLikes.removeChild(bigCardLikes);
+      heart.style.color = '#8f8b8b';
 
+      commentForm.removeEventListener('submit', postComment);
+
+      // Allow scrolling again
+      body.style.overflow = 'visible';
     });
 
   } catch (e) {

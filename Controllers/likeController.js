@@ -55,11 +55,12 @@ const like_status = async (req, res) => {
     const status = await likeModel.likeStatus(req);
     console.log('likeController: like_status', status);
 
-    // User hasn't liked
+
     if (status == undefined) {
+      // User hasn't liked
       await res.status(200).send({'result': false});
-      // User has liked or disliked already
     } else if (status.likes == 1 || status.dislikes == 1) {
+      // User has liked or disliked already
       await res.status(200).send({'result': true});
     } else {
       // User hasn't liked
