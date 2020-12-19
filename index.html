@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/smallcard.css">
     <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/bigcard.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/2d155bb92d.js" crossorigin="anonymous"></script>
@@ -156,7 +157,8 @@
         <form enctype="multipart/form-data" id="add-media-form" class="form">
             <div class="form-control" id="description-form-control">
                 <label>Description</label>
-                <textarea type="text" name="description" placeholder="Sample description" required="" style="margin: 0;width: 100%;height: 10vh;"></textarea>
+                <textarea type="text" name="description" placeholder="Sample description" required=""
+                          style="margin: 0;width: 100%;height: 10vh;"></textarea>
             </div>
             <div class="form-control">
                 <label>Choose a file, image or video<br>Max 50Mb</label>
@@ -165,6 +167,93 @@
             </div>
             <button type="submit">Publish</button>
         </form>
+    </div>
+</div>
+
+<div class="modal" style="display: none">
+    <div class="boxcontainer">
+
+
+        <span class="close-button">×</span>
+        <div class="boxes">
+            <p href="#" class="left-arrow">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img"
+                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"
+                     class="svg-inline--fa fa-chevron-left fa-w-10 fa-9x">
+                    <path fill="currentColor"
+                          d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"
+                          class=""></path>
+                </svg>
+            </p>
+            <div class="big-card-media">
+            <!--Image goes here -->
+            </div>
+            <div class="big-card-info">
+                <div class="mobile-close">
+                    <p class="mobile-close-button">×</p>
+                </div>
+                <div class="user-info">
+                    <!-- Media owner name goes here-->
+                    <!-- Media owner profile picture goes here-->
+                </div>
+                <p class="description"><!-- Media description goes here--></p>
+
+                <div class="comments">
+                    <!--<div class="comment-container">
+                        <img src="http://placekitten.com/200/200" alt="user-profile-pic" class="comment-profile-pic">
+                        <div class="comment-user-input">
+                            <p class="user-input-date">13.33 Cat#1</p>
+                            <p class="user-input-message">That's a great picture of a great cat!</p>
+                        </div>
+                    </div>-->
+                </div>
+                <div class="interactions">
+                    <p class="input-likes"><!--Number of likes goes here-->
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="heart" role="img"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                             class="svg-inline--fa fa-heart fa-w-16 fa-3x">
+                            <path fill="currentColor"
+                                  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"
+                                  class=""></path>
+                        </svg>
+                    </p>
+                    <p class="input-comments"><!--Number of comments goes here-->
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="comments" role="img"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"
+                             class="svg-inline--fa fa-comments fa-w-18 fa-3x">
+                            <path fill="currentColor"
+                                  d="M416 192c0-88.4-93.1-160-208-160S0 103.6 0 192c0 34.3 14.1 65.9 38 92-13.4 30.2-35.5 54.2-35.8 54.5-2.2 2.3-2.8 5.7-1.5 8.7S4.8 352 8 352c36.6 0 66.9-12.3 88.7-25 32.2 15.7 70.3 25 111.3 25 114.9 0 208-71.6 208-160zm122 220c23.9-26 38-57.7 38-92 0-66.9-53.5-124.2-129.3-148.1.9 6.6 1.3 13.3 1.3 20.1 0 105.9-107.7 192-240 192-10.8 0-21.3-.8-31.7-1.9C207.8 439.6 281.8 480 368 480c41 0 79.1-9.2 111.3-25 21.8 12.7 52.1 25 88.7 25 3.2 0 6.1-1.9 7.3-4.8 1.3-2.9.7-6.3-1.5-8.7-.3-.3-22.4-24.2-35.8-54.5z"
+                                  class=""></path>
+                        </svg>
+                    </p>
+                    <p class="input-location">
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="map-marked" role="img"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"
+                             class="svg-inline--fa fa-map-marked fa-w-18 fa-3x">
+                            <path fill="currentColor"
+                                  d="M288 0c-69.59 0-126 56.41-126 126 0 56.26 82.35 158.8 113.9 196.02 6.39 7.54 17.82 7.54 24.2 0C331.65 284.8 414 182.26 414 126 414 56.41 357.59 0 288 0zM20.12 215.95A32.006 32.006 0 0 0 0 245.66v250.32c0 11.32 11.43 19.06 21.94 14.86L160 448V214.92c-8.84-15.98-16.07-31.54-21.25-46.42L20.12 215.95zM288 359.67c-14.07 0-27.38-6.18-36.51-16.96-19.66-23.2-40.57-49.62-59.49-76.72v182l192 64V266c-18.92 27.09-39.82 53.52-59.49 76.72-9.13 10.77-22.44 16.95-36.51 16.95zm266.06-198.51L416 224v288l139.88-55.95A31.996 31.996 0 0 0 576 426.34V176.02c0-11.32-11.43-19.06-21.94-14.86z"
+                                  class=""></path>
+                        </svg>
+                    </p>
+                </div>
+                <div class="post-comment-section">
+                    <form class="post-comment-form">
+                        <textarea type="text" class="post-comment-textarea" name="comment" pattern=".{3,}"
+                                  placeholder="Write your comment about this photo here" required></textarea>
+                        <button class="post-comment-button" type="submit">Comment</button>
+                    </form>
+                </div>
+            </div>
+            <p href="#" class="right-arrow">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img"
+                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"
+                     class="svg-inline--fa fa-chevron-right fa-w-10 fa-7x">
+                    <path fill="currentColor"
+                          d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+                          class=""></path>
+                </svg>
+            </p>
+        </div>
     </div>
 </div>
 

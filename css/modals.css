@@ -1,3 +1,5 @@
+/* Contains CSS for the registration, login and uploading modals */
+
 .register-modal {
     display: none;
     position: fixed;
