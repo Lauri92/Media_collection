@@ -1,6 +1,21 @@
 /* CSS for the big opening card */
 
+/* Scroll bar adjustments*/
+.comments::-webkit-scrollbar {
+    width: 0.50rem;
+}
+
+.comments::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.comments::-webkit-scrollbar-thumb {
+    background: #e3e7de;
+    border-radius: 10px;
+}
+
 .modal {
+    font-size: 13px;
     position: fixed;
     z-index: 500;
     left: 0;

@@ -505,10 +505,6 @@ const createBigCard = async (media) => {
     // All comments of certain media
     const allComments = document.querySelector('.comments');
 
-    // Update amount of comments next to chat bubble
-    // Target the container dedicated for comments in the HTML
-    //const inputComments = document.querySelector('.input-comments');
-
     // Target span to hold the comments
     const bigCardComments = document.querySelector('#big-card-comments');
 
@@ -561,8 +557,6 @@ const createBigCard = async (media) => {
 
     }
 
-    // Target the container dedicated for likes in the HTML
-    //const inputLikes = document.querySelector('.input-likes');
 
     // Target the span to hold the likes
     const bigCardLikes = document.querySelector('#big-card-likes');
@@ -654,6 +648,8 @@ const createBigCard = async (media) => {
         const json = await response.json();
         console.log('add comment response', json);
 
+        // Clear the comment textarea
+        document.querySelector('.post-comment-textarea').value = '';
 
         // Update the comment section to show users comment in real time withhout closing and opening card again
         allComments.innerHTML = '';
@@ -706,7 +702,7 @@ const createBigCard = async (media) => {
       }
     }
 
-    // Close big card and remove childs or clear it by using innerHTML
+    // Close big card and clear it by using innerHTML
     bigCardCloseButton.addEventListener('click', async (e) => {
       bigCardModal.style.display = 'none';
       // TODO: Remove created elements when closing the big card
@@ -716,12 +712,11 @@ const createBigCard = async (media) => {
       description.innerHTML = '';
       bigCardComments.innerHTML = '';
       bigCardLikes.innerHTML = '';
-
-      //const allComments = document.querySelector('.comments')
       allComments.innerHTML = '';
 
       heart.style.color = '#8f8b8b';
 
+      // Remove event listener from the form to not stack event listeners on top of same form
       commentForm.removeEventListener('submit', postComment);
 
       // Allow scrolling again
