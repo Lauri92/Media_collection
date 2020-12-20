@@ -26,14 +26,6 @@ const addMediaForm = document.querySelector('#add-media-form');
 // Misc
 const imgInput = document.querySelector('#img-input');
 
-// Check for the token...if it exists do these
-const isToken = (sessionStorage.getItem('token'));
-if (isToken) {
-  setUserAslogged();
-} else {
-  console.log('No token, log in plz');
-}
-
 /**
  * Function to create media cards on the page
  */
@@ -100,6 +92,8 @@ logoutButton.addEventListener('click', async (e) => {
     registerButton.style.display = 'block';
     loginButton.style.display = 'block';
     logoutButton.style.display = 'none';
+    addMediaButton.style.display = 'none';
+    profileButton.style.display = 'none';
 
   } catch (e) {
     console.log(e.message);
@@ -147,7 +141,9 @@ loginForm.addEventListener('submit', async (e) => {
       //Set token
       sessionStorage.setItem('token', json.token);
       console.log('token: ', sessionStorage.getItem('token'));
+      await getLoggedUser();
       await setUserAslogged();
+      await getAllMedia();
     }
   } catch (e) {
     console.log(e.message);
@@ -204,7 +200,7 @@ addMediaForm.addEventListener('submit', async (e) => {
   const response = await fetch(url + '/media', fetchOptions);
   const json = await response.json();
   console.log('add media response', json);
-  console.log('json.pick_id', json.pic_id);
+  console.log('json.pick_id', json.id);
 });
 
 /**
@@ -276,6 +272,30 @@ const getLikeStatus = async (media_id) => {
   }
 };
 
+const getLoggedUser = async () => {
+  try {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch(url + '/user/check/userlogged',
+        options);
+    const userInfo = await response.json();
+    console.log(userInfo);
+
+    // Set profile picture in nav bar
+    const profileImg = document.createElement('img');
+    profileImg.src = `./Thumbnails/${userInfo.profile_picture}`;
+    profileButton.appendChild(profileImg);
+
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
 /**
  * Functions for utility
  */
@@ -284,8 +304,9 @@ function setUserAslogged() {
   loginModal.style.display = 'none';
   loginButton.style.display = 'none';
   registerButton.style.display = 'none';
-  logoutButton.style.display = 'block';
-  profileButton.style.display = 'block';
+  logoutButton.style.display = 'flex';
+  profileButton.style.display = 'flex';
+  addMediaButton.style.display = 'flex';
 }
 
 // Set thumbnail of to-be-uploaded photo
@@ -388,8 +409,6 @@ function isEmail(email) {
       email);
 }
 
-getAllMedia();
-
 const createSmallCards = async (media) => {
   //console.log(mediaLikes[0].likes);
 
@@ -419,7 +438,7 @@ const createSmallCards = async (media) => {
   // Also add likes and comments to card
   try {
     // Get all likes of the image
-    const mediaLikes = await getLikes(media.pic_id);
+    const mediaLikes = await getLikes(media.id);
     // Some media have no likes yet
     if (undefined === mediaLikes[0]) {
       // No likes
@@ -428,7 +447,7 @@ const createSmallCards = async (media) => {
       // Has likes
       smallCardP.innerHTML = `Likes: ${mediaLikes[0].likes}`;
     }
-    const comments = await getComments(media.pic_id);
+    const comments = await getComments(media.id);
     if (comments.length < 1) {
       // No likes
       smallCardP.innerHTML += `<br>Comments: 0`;
@@ -449,7 +468,7 @@ const createSmallCards = async (media) => {
 
   // Add event listener to create a big card
   smallCardDiv.addEventListener('click', async () => {
-    console.log(`Clicked media with id of ${media.pic_id}`);
+    console.log(`Clicked media with id of ${media.id}`);
     try {
       await createBigCard(media);
       // Avoid scrolling background while big card is open
@@ -462,7 +481,7 @@ const createSmallCards = async (media) => {
 
 // Contains more detailed info about media, description, likes, comments..
 const createBigCard = async (media) => {
-  //console.log(media);
+  console.log(media);
   document.querySelector('.modal').style.display = 'flex';
   try {
 
@@ -499,7 +518,7 @@ const createBigCard = async (media) => {
     description.innerHTML = `${media.description}`;
 
     // Comment section
-    const comments = await getComments(media.pic_id);
+    const comments = await getComments(media.id);
     console.log(comments);
 
     // All comments of certain media
@@ -507,7 +526,6 @@ const createBigCard = async (media) => {
 
     // Target span to hold the comments
     const bigCardComments = document.querySelector('#big-card-comments');
-
 
     try {
       if (comments.length > 0) {
@@ -557,13 +575,12 @@ const createBigCard = async (media) => {
 
     }
 
-
     // Target the span to hold the likes
     const bigCardLikes = document.querySelector('#big-card-likes');
 
     try {
       // Get all likes of the media
-      const mediaLikes = await getLikes(media.pic_id);
+      const mediaLikes = await getLikes(media.id);
       // Some media have no likes yet
       if (undefined === mediaLikes[0]) {
         // No likes
@@ -580,7 +597,7 @@ const createBigCard = async (media) => {
     }
 
     // Check if the currently logged in user has already liked this piece of media
-    const hasLiked = await getLikeStatus(media.pic_id);
+    const hasLiked = await getLikeStatus(media.id);
     const heart = document.querySelector('.fa-heart');
 
     if (hasLiked.result === true) {
@@ -604,16 +621,15 @@ const createBigCard = async (media) => {
         console.log(options);
         // Fetch to give this media a like
         const response = await fetch(
-            url + '/likes/incrementlike/' + media.pic_id, options);
+            url + '/likes/incrementlike/' + media.id, options);
         const json = await response.json();
         console.log('add like response', json);
         heart.style.color = '#B00923';
 
         // Update the UI, so fetch the new like amount from database
-        const mediaLikes = await getLikes(media.pic_id);
+        const mediaLikes = await getLikes(media.id);
         // Must be at least one like now so there is no need to check if the value is undefined
         bigCardLikes.innerHTML = `${mediaLikes[0].likes}`;
-        document.querySelector();
 
         // Remove evenlistener from heart
         heart.removeEventListener('click', likeMedia);
@@ -644,7 +660,7 @@ const createBigCard = async (media) => {
         };
         console.log(fetchOptions);
         const response = await fetch(
-            url + `/comments/${media.pic_id}`, fetchOptions);
+            url + `/comments/${media.id}`, fetchOptions);
         const json = await response.json();
         console.log('add comment response', json);
 
@@ -655,7 +671,7 @@ const createBigCard = async (media) => {
         allComments.innerHTML = '';
 
         // Get updated comments
-        const comments = await getComments(media.pic_id);
+        const comments = await getComments(media.id);
 
         // Update the big card amount of likes, no need to check for undefined, there will be atleast 1 comment
         // in this case
@@ -727,3 +743,13 @@ const createBigCard = async (media) => {
     console.log(e.message);
   }
 };
+
+// Check for the token...if it exists do these
+const isToken = (sessionStorage.getItem('token'));
+if (isToken) {
+  getLoggedUser();
+  setUserAslogged();
+  getAllMedia();
+} else {
+  console.log('No token, log in plz');
+}

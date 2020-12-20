@@ -8,10 +8,10 @@ const getLikesById = async (id) => {
     const [rows] = await promisePool.execute(
         'SELECT SUM(likes) AS likes,\n' +
         '       SUM(dislikes) AS dislikes,\n' +
-        '        pic_id\n' +
-        'FROM    wop_testlikes\n' +
-        'WHERE pic_id = ?\n' +
-        'GROUP BY pic_id;', [id]);
+        '        media_id\n' +
+        'FROM    likes\n' +
+        'WHERE media_id = ?\n' +
+        'GROUP BY media_id;', [id]);
     return rows;
   } catch (e) {
     console.error('likeMode getLikesById: ', e.message);
@@ -23,10 +23,10 @@ const createUserLike = async (req) => {
   try {
     console.log('likeModel createUserLike id: ', req.body);
     const [rows] = await promisePool.execute(
-        `INSERT INTO wop_testlikes (pic_id, likes, dislikes, user_id) 
+        `INSERT INTO likes (media_id, likes, dislikes, user_id) 
         VALUES(?, ?, ?, ?)`,
         [
-          req.body.pic_id,
+          req.body.media_id,
           req.body.likes,
           req.body.dislikes,
           req.body.user_id],
@@ -40,13 +40,13 @@ const createUserLike = async (req) => {
 // Check if user has liked or disliked already
 const likeStatus = async (req, res) => {
   try {
-    console.log('likeModel likeStatus :', req.body.user_id, req.body.pic_id);
+    console.log('likeModel likeStatus :', req.body.user_id, req.body.media_id);
     const [rows] = await promisePool.execute('SELECT likes, dislikes\n' +
-        ' FROM wop_testlikes\n' +
+        ' FROM likes\n' +
         '  WHERE user_id = ? AND\n' +
-        '   pic_id = ?;', [
+        '   media_id = ?;', [
       req.body.user_id,
-      req.body.pic_id]);
+      req.body.media_id]);
     return rows[0];
   } catch (e) {
     console.error(e.message);

@@ -6,13 +6,13 @@ const promisePool = pool.promise();
 const getAllMedia = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.user_id, wop_testpic.mediatype\n' +
-        'FROM wop_testuser\n' +
-        'INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id\n' +
-        'ORDER BY wop_testpic.post_date DESC;');
+        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype\n' +
+        'FROM users\n' +
+        'INNER JOIN medias ON users.id = medias.user_id\n' +
+        'ORDER BY medias.post_date DESC;');
     return rows;
   } catch (e) {
-    console.error('picModel getAllVideos: ', e.message);
+    console.error('mediaModel getAllMedia: ', e.message);
   }
 };
 
@@ -20,14 +20,14 @@ const getAllMedia = async () => {
 const getAllPics = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.user_id, wop_testpic.mediatype\n' +
-        ' FROM wop_testuser \n' +
-        '  INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id\n' +
-        '   WHERE wop_testpic.mediatype = \'image\' \n' +
-        '    ORDER BY wop_testpic.post_date DESC;');
+        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype\n' +
+        ' FROM users \n' +
+        '  INNER JOIN medias ON users.id = medias.user_id\n' +
+        '   WHERE medias.mediatype = \'image\' \n' +
+        '    ORDER BY medias.post_date DESC;');
     return rows;
   } catch (e) {
-    console.error('picModel getAllPics: ', e.message);
+    console.error('mediaModel getAllPics: ', e.message);
   }
 };
 
@@ -35,14 +35,14 @@ const getAllPics = async () => {
 const getAllVideos = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.user_id, wop_testpic.mediatype \n' +
-        ' FROM wop_testuser \n' +
-        '  INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id \n' +
-        '   WHERE wop_testpic.mediatype = \'video\' \n' +
-        '    ORDER BY wop_testpic.post_date DESC');
+        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype \n' +
+        ' FROM users \n' +
+        '  INNER JOIN medias ON users.id = medias.user_id \n' +
+        '   WHERE medias.mediatype = \'video\' \n' +
+        '    ORDER BY medias.post_date DESC');
     return rows;
   } catch (e) {
-    console.error('picModel getAllVideos: ', e.message);
+    console.error('mediaModel getAllVideos: ', e.message);
   }
 };
 
@@ -50,66 +50,66 @@ const getAllVideos = async () => {
 const getMediaByMostLikes = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT IFNULL(SUM(wop_testlikes.likes), 0) likes, wop_testpic.pic_id, wop_testpic.description, wop_testpic.filename, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testuser.name, wop_testuser.lastname, wop_testpic.mediatype\n' +
-        'FROM wop_testpic \n' +
-        'LEFT JOIN wop_testlikes ON wop_testpic.pic_id = wop_testlikes.pic_id \n' +
-        'LEFT JOIN wop_testuser ON wop_testpic.user_id = wop_testuser.user_id\n' +
-        'group by wop_testpic.pic_id\n' +
+        'SELECT IFNULL(SUM(likes.likes), 0) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype\n' +
+        'FROM medias \n' +
+        'LEFT JOIN likes ON medias.id = likes.media_id \n' +
+        'LEFT JOIN users ON medias.user_id = users.id\n' +
+        'group by medias.id\n' +
         'ORDER BY LIKES DESC');
     return rows;
   } catch (e) {
-    console.error('picModel getMediaByMostLikes', e.message);
+    console.error('mediaModel getMediaByMostLikes', e.message);
   }
 };
 
 // Returns single media item of a user, used for showing added row
 const getMediaById = async (id) => {
   try {
-    console.log('picModel getMediaById', id);
+    console.log('mediaModel getMediaById', id);
     const [rows] = await promisePool.execute(
-        'SELECT * FROM wop_testpic WHERE pic_id = ?', [id]);
+        'SELECT * FROM medias WHERE id = ?', [id]);
     return rows[0];
   } catch (e) {
-    console.error('picModel getMediaById:', e.message);
+    console.error('mediaModel getMediaById:', e.message);
   }
 };
 
 // Returns all of users media
 const getMediaByOwner = async (user_id) => {
   try {
-    console.log('picModel getMediaByOwner id:', user_id);
+    console.log('mediaModel getMediaByOwner id:', user_id);
     if (user_id !== null) {
       const [rows] = await promisePool.execute(
-          'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.mediatype \n' +
-          ' FROM wop_testuser INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id\n' +
-          '  WHERE wop_testuser.user_id = ?\n' +
-          '   ORDER BY wop_testpic.post_date DESC;', [user_id]);
+          'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.mediatype \n' +
+          ' FROM users INNER JOIN medias ON users.id = medias.user_id\n' +
+          '  WHERE users.id = ?\n' +
+          '   ORDER BY medias.post_date DESC;', [user_id]);
       return rows;
     } else {
       console.log('Not acceptable');
     }
   } catch (e) {
-    console.error('picModel getMediaByOwner error:', e.message);
+    console.error('mediaModel getMediaByOwner error:', e.message);
   }
 };
 
 // Returns all of users chosen media
 const getChosenMediaByOwner = async (req) => {
   try {
-    console.log('picModel getChosenMediaByOwner req.body:', req.body);
+    console.log('mediaModel getChosenMediaByOwner req.body:', req.body);
     if (req.body.user_id !== null) {
       const [rows] = await promisePool.execute(
-          'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.mediatype\n' +
-          'FROM wop_testuser INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id\n' +
-          'WHERE wop_testuser.user_id = ? AND\n' +
-          'wop_testpic.mediatype = ? \n' +
-          'ORDER BY wop_testpic.post_date DESC;', [req.body.user_id, req.body.mediatype]);
+          'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.mediatype\n' +
+          'FROM users INNER JOIN medias ON users.id = medias.user_id\n' +
+          'WHERE users.id = ? AND\n' +
+          'medias.mediatype = ? \n' +
+          'ORDER BY medias.post_date DESC;', [req.body.user_id, req.body.mediatype]);
       return rows;
     } else {
       console.log('Not acceptable');
     }
   } catch (e) {
-    console.error('picModel getChosenMediaByOwner error:', e.message);
+    console.error('mediaModel getChosenMediaByOwner error:', e.message);
   }
 };
 
@@ -117,14 +117,14 @@ const getChosenMediaByOwner = async (req) => {
 // Search all database descriptions and order by most liked
 const getMediaBySearch = async (input) => {
   try {
-    console.log('picModel getMediaBySearch: ', input);
+    console.log('mediaModel getMediaBySearch: ', input);
     const [rows] = await promisePool.execute(
-        'SELECT IFNULL(COUNT(wop_testlikes.likes), null) likes, wop_testpic.pic_id, wop_testpic.description, wop_testpic.filename, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testuser.name, wop_testuser.lastname, wop_testpic.mediatype\n' +
-        'FROM wop_testpic \n' +
-        'LEFT JOIN wop_testlikes ON wop_testpic.pic_id = wop_testlikes.pic_id \n' +
-        'LEFT JOIN wop_testuser ON wop_testpic.user_id = wop_testuser.user_id\n' +
-        'WHERE wop_testpic.description LIKE ? \n' +
-        'group by wop_testpic.pic_id\n' +
+        'SELECT IFNULL(COUNT(likes.likes), null) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype\n' +
+        'FROM medias \n' +
+        'LEFT JOIN likes ON medias.id = likes.media_id \n' +
+        'LEFT JOIN users ON medias.user_id = users.id\n' +
+        'WHERE medias.description LIKE ? \n' +
+        'group by medias.id\n' +
         'ORDER BY LIKES DESC;', [input]);
     return rows;
   } catch (e) {
@@ -133,12 +133,12 @@ const getMediaBySearch = async (input) => {
 };
 
 // Get user id of certain uploaded media
-const getMediaUserId = async (pic_id) => {
+const getMediaUserId = async (media_id) => {
   try {
     console.log('getMediaUserId');
     const [rows] = await promisePool.execute('SELECT *\n' +
-        ' FROM wop_testpic\n' +
-        '  WHERE wop_testpic.pic_id = ?;', [pic_id]);
+        ' FROM medias\n' +
+        '  WHERE medias.id = ?;', [media_id]);
     return rows[0];
   } catch (e) {
     console.error(e.message);
@@ -151,7 +151,7 @@ const insertMedia = async (req) => {
   console.log('req.file: ', req.file);
   try {
     const [rows] = await promisePool.execute(
-        'INSERT INTO wop_testpic (user_id, description, filename, coords, date, post_date, mediatype)' +
+        'INSERT INTO medias (user_id, description, filename, coords, date, post_date, mediatype)' +
         'VALUES (?, ?, ?, ?, ?, ?, ?)',
         [
           req.body.id,
@@ -161,26 +161,26 @@ const insertMedia = async (req) => {
           req.body.dateTimeOriginal,
           req.body.postDate,
           req.body.mediatype]);
-    console.log('picModel insert: ', rows);
+    console.log('mediaModel insert: ', rows);
     //Used to display inserted information
     return rows.insertId;
   } catch (e) {
-    console.log('picModel insert error: ', e);
+    console.log('mediaModel insert error: ', e);
     return 0;
   }
 };
 
 // Delete any media and associated likes and comments
-const deleteMedia = async (pic_id) => {
-  console.log('picModel deleteMedia pic_id: ', pic_id);
+const deleteMedia = async (media_id) => {
+  console.log('mediaModel deleteMedia media_id: ', media_id);
   try {
     const [rows] = await promisePool.execute(
-        'DELETE FROM wop_testpic WHERE pic_id = ?', [pic_id]);
+        'DELETE FROM medias WHERE id = ?', [media_id]);
     const [rows2] = await promisePool.execute(
-        'DELETE FROM wop_testcomments WHERE pic_id = ?', [pic_id]);
+        'DELETE FROM wop_testcomments WHERE media_id = ?', [media_id]);
     const [rows3] = await promisePool.execute(
-        'DELETE FROM wop_testlikes WHERE pic_id = ?', [pic_id]);
-    return 'deleted pic and associated likes and comments';
+        'DELETE FROM likes WHERE media_id = ?', [media_id]);
+    return 'deleted media and associated likes and comments';
   } catch (e) {
     console.error(e.message);
   }

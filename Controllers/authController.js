@@ -52,7 +52,7 @@ const user_create_post = async (req, res, next) => {
         const hash = bcrypt.hashSync(req.body.password, salt);
         req.body.password = hash;
 
-        // Admin always defaults to 0
+        // Admin always defaults to 0, for now only manual SQL query on server / myphpadmin to set admins
         req.body.admin = 0;
 
         console.log('authController: salt and hash craeted, pw hashed');

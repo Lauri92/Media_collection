@@ -5,7 +5,7 @@ const promisePool = pool.promise();
 // Get all users from database
 const getAllUsers = async () => {
   try {
-    const [rows] = await promisePool.execute('SELECT * FROM wop_testuser');
+    const [rows] = await promisePool.execute('SELECT * FROM users');
     return rows;
   } catch (e) {
     console.error('userModel getAllUsers: ', e.message);
@@ -16,7 +16,7 @@ const getAllUsers = async () => {
 const getUser = async (id) => {
   try {
     const [rows] = await promisePool.execute(
-        `SELECT * FROM wop_testuser WHERE user_id = ?`, [id]);
+        `SELECT * FROM users WHERE id = ?`, [id]);
     return rows[0];
   } catch (e) {
     console.error('userModel getUser: ', e.message);
@@ -28,7 +28,7 @@ const insertUser = async (req) => {
   console.log('userModel req.body: ', req.body);
   try {
     const [rows] = await promisePool.execute(
-        'INSERT INTO wop_testuser (name, lastname, email, password, admin)' +
+        'INSERT INTO users (name, lastname, email, password, admin)' +
         'VALUES (?, ?, ?, ?, ?)',
         [
           req.body.name,
@@ -44,12 +44,13 @@ const insertUser = async (req) => {
   }
 };
 
+// TODO: Check if this function is actually relevant anymore
 // Get users email
 const getUserLogin = async (params) => {
   try {
     console.log('getUserLogin', params);
     const [rows] = await promisePool.execute(
-        'SELECT * FROM wop_testuser WHERE email = ?;',
+        'SELECT * FROM users WHERE email = ?;',
         params);
     return rows;
   } catch (e) {
@@ -62,8 +63,8 @@ const checkEmailAvailability = async (req, res) => {
   try {
     console.log('userModel checkEmailAvalability');
     const [rows] = await promisePool.execute('SELECT *\n' +
-        'FROM wop_testuser\n' +
-        'WHERE wop_testuser.email = ?;', [req.body.email])
+        'FROM users\n' +
+        'WHERE users.email = ?;', [req.body.email])
     return rows[0]
   } catch (e) {
     console.error(e.message);

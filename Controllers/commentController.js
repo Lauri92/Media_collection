@@ -31,8 +31,8 @@ const add_comment = async (req, res) => {
 
   //Add values to req.body
   req.body.date = date;
-  req.body.pic_id = req.params.pic_id;
-  req.body.user_id = req.user.user_id;
+  req.body.media_id = req.params.media_id;
+  req.body.user_id = req.user.id;
   console.log('req.body after adding', req.body);
   const comment = await commentModel.addComment(req);
   await res.json(comment);
@@ -41,7 +41,7 @@ const add_comment = async (req, res) => {
 // Send true if user is the owner of picture, else send false
 const get_comment_user_id = async (req, res) => {
   const commentOwner = await commentModel.getCommentUserId(req.params.comment_id);
-  if (commentOwner.user_id == req.user.user_id || req.user.admin == 1) {
+  if (commentOwner.user_id == req.user.id || req.user.admin == 1) {
     await res.status(200).send({'result': true});
   } else {
     await res.status(200).send({'result': false});
@@ -54,7 +54,7 @@ const comment_delete = async (req, res) => {
   const commentOwner = await commentModel.getCommentUserId(req.params.comment_id);
   console.log('commentOwner info, is there user_id?: ', commentOwner);
 
-  if (commentOwner.user_id == req.user.user_id || req.user.admin == 1) {
+  if (commentOwner.user_id == req.user.id || req.user.admin == 1) {
     const picDeleted = await commentModel.deleteComment(req.params.comment_id);
     await res.json(picDeleted);
   }

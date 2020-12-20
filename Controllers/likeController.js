@@ -12,15 +12,15 @@ const get_likes_by_id = async (req, res) => {
 const create_user_like = async (req, res) => {
   try {
     // Backend check that a user cannot post multiple likes in any possible way
-    req.body.pic_id = req.params.id;
-    req.body.user_id = req.user.user_id;
+    req.body.media_id = req.params.id;
+    req.body.user_id = req.user.id;
 
     // Get status whether user has liked yet or not
     const status = await likeModel.likeStatus(req);
     console.log('likeController: like_status', status);
 
     // User hasn't liked or disliked before
-    // undefined in this case means that database has no record with combined user_id and pic_id
+    // undefined in this case means that database has no record with combined user_id and media_id
     // req.path contains the info which determines which button was pressed
     if (status === undefined) {
       // User clicked like button
@@ -50,8 +50,8 @@ const create_user_like = async (req, res) => {
 // Check if the user has liked or disliked the picture or not
 const like_status = async (req, res) => {
   try {
-    req.body.pic_id = req.params.pic_id;
-    req.body.user_id = req.user.user_id;
+    req.body.media_id = req.params.media_id;
+    req.body.user_id = req.user.id;
     const status = await likeModel.likeStatus(req);
     console.log('likeController: like_status', status);
 

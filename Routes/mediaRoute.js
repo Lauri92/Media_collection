@@ -46,7 +46,7 @@ router.get('/pics', mediaController.pic_list_get);
 router.get('/videos', mediaController.video_list_get);
 
 // Get all media of user
-router.route('/userpics').get(mediaController.media_get_by_owner);
+router.route('/usermedia').get(mediaController.media_get_by_owner);
 
 // Get specified media of user
 router.route('/specifiedusermedia/video').get(mediaController.chosen_media_get_by_owner)
@@ -59,10 +59,10 @@ router.get('/mostlikes', mediaController.media_list_get_by_most_likes);
 router.get('/search/:input', mediaController.media_list_get_by_search);
 
 // Get logged in users media by id
-router.get('/picuserid/:pic_id', mediaController.get_media_user_id);
+router.get('/picuserid/:media_id', mediaController.get_media_user_id);
 
 // Delete media of user
-router.delete('/delete/:pic_id', mediaController.media_delete);
+router.delete('/delete/:media_id', mediaController.media_delete);
 
 // Upload media
 router.route('/')

@@ -8,8 +8,8 @@ const fs = require('fs');
 
 // Get all media
 const media_list_get = async (req, res) => {
-  const pics = await mediaModel.getAllMedia();
-  await res.json(pics);
+  const media = await mediaModel.getAllMedia();
+  await res.json(media);
 };
 
 // get all images
@@ -20,22 +20,22 @@ const pic_list_get = async (req, res) => {
 
 // Get all videos
 const video_list_get = async (req, res) => {
-  const pics = await mediaModel.getAllVideos();
-  await res.json(pics);
+  const videos = await mediaModel.getAllVideos();
+  await res.json(videos);
 };
 
 // Controller for getting media by most likes
 const media_list_get_by_most_likes = async (req, res) => {
-  const pics = await mediaModel.getMediaByMostLikes();
-  await res.json(pics);
+  const media = await mediaModel.getMediaByMostLikes();
+  await res.json(media);
 };
 
 // Controller for getting media by search input
 const media_list_get_by_search = async (req, res) => {
   const input = '%' + req.params.input + '%';
   console.log(input);
-  const pics = await mediaModel.getMediaBySearch(input);
-  await res.json(pics);
+  const media = await mediaModel.getMediaBySearch(input);
+  await res.json(media);
 };
 
 // Controller for Creating media
@@ -59,7 +59,7 @@ const media_create = async (req, res) => {
   }
 
   //Add jwt user_id as part of body
-  req.body.id = req.user.user_id;
+  req.body.id = req.user.id;
 
   // Check if the image has any exifData
   const isExifdata = await ImageMeta.checkExifdata(req.file.path);
@@ -119,9 +119,9 @@ const media_create = async (req, res) => {
   // Insert media, response from model is the Id of inserted media
   const id = await mediaModel.insertMedia(req);
   //Query for media which was inserted
-  const pic = await mediaModel.getMediaById(id);
+  const media = await mediaModel.getMediaById(id);
   //...then send info of inserted media to user
-  res.send(pic);
+  res.send(media);
 };
 
 // Create thumbnails with sharp --> resize.js
@@ -149,15 +149,15 @@ const make_thumbnail = async (req, res, next) => {
 
 // Get all content posted by user
 const media_get_by_owner = async (req, res) => {
-  console.log(`picController: http get pic with path param`, req.params);  //params -> id
-  const media = await mediaModel.getMediaByOwner(req.user.user_id);
+  console.log(`picController: http get media with path param`, req.params);  //params -> id
+  const media = await mediaModel.getMediaByOwner(req.user.id);
   await res.json(media);
 };
 
 // Get specified type of media of a user, path includes requested mediatype
 const chosen_media_get_by_owner = async (req, res) => {
 
-  req.body.user_id = req.user.user_id;
+  req.body.user_id = req.user.id;
 
   // Check request type
   if (req.path.includes('image')) {
@@ -173,8 +173,8 @@ const chosen_media_get_by_owner = async (req, res) => {
 
 // Send true if user is the owner of media, else send false
 const get_media_user_id = async (req, res) => {
-  const mediaOwner = await mediaModel.getMediaUserId(req.params.pic_id);
-  if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
+  const mediaOwner = await mediaModel.getMediaUserId(req.params.media_id);
+  if (mediaOwner.user_id == req.user.id || req.user.admin == 1) {
     await res.status(200).send({'result': true});
   } else {
     await res.status(200).send({'result': false});
@@ -184,23 +184,25 @@ const get_media_user_id = async (req, res) => {
 // Delete user media
 const media_delete = async (req, res) => {
   // Check user_id of the media
-  const mediaOwner = await mediaModel.getMediaUserId(req.params.pic_id);
+  const mediaOwner = await mediaModel.getMediaUserId(req.params.media_id);
   console.log('mediaOwner info, is there filename?: ', mediaOwner);
 
   // mediaOwner user_id matches logged in user or logged in user is admin
-  if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
+  if (mediaOwner.user_id == req.user.id || req.user.admin == 1) {
 
-    // Delete files from the machine too
+    // Delete files from the machine
     if (mediaOwner.mediatype === 'image') {
       // mediatype was image
       fs.unlink(`Thumbnails/${mediaOwner.filename}`, err => {
         if (err) throw err;
+        // Images are saved in Thumbnails
         console.log(`Removing Thumbnails/${mediaOwner.filename}`);
       });
     } else {
       // ... was a video
       fs.unlink(`Uploads/${mediaOwner.filename}`, err => {
         if (err) throw err;
+        // Videos are saved in Uploads
         console.log(`Removing Uploads/${mediaOwner.filename}`);
       });
     }

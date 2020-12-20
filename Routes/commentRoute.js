@@ -16,7 +16,7 @@ router.get('/commentuserid/:comment_id', commentController.get_comment_user_id);
 router.delete('/delete/:comment_id', commentController.comment_delete);
 
 // comment a piece media
-router.post('/:pic_id',
+router.post('/:media_id',
     [
       body('comment',
           'must be at least three characters').

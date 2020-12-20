@@ -49,6 +49,8 @@ body::-webkit-scrollbar-thumb {
     width: 100%;
     background: #1e1e24;
     color: #f5f1f1;
+    position: fixed;
+    z-index: 1;
 }
 
 ul {
@@ -65,14 +67,21 @@ ul {
     height: 100%;
 }
 
+.navbar img {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
 /* Initially not shown, show when user is logged in */
-#logout-button, #profile-button {
+#logout-button, #profile-button, #add-media-button {
     display: none;
 }
 
 
 /*Card container from here on*/
 .container {
+    margin-top: 15vh;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -172,10 +181,15 @@ ul {
 
 
 @media only screen and (max-width: 550px) {
+
+    .navbar {
+        font-size: 13px;
+    }
+
     .cards {
         flex-direction: column;
         align-items: center;
-        margin: 5px 0;
+        margin : 0 18px 0 0;
     }
 
     .card {

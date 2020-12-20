@@ -30,12 +30,16 @@ const user_create = async (req, res) => {
 
 // Simple check to check for who is the jwt holder
 const check_username = async (req, res) => {
-  res.json({'name': req.user.name, 'lastname': req.user.lastname});
-}
+  res.json({
+    'name': req.user.name,
+    'lastname': req.user.lastname,
+    'profile_picture': req.user.profile_picture,
+  });
+};
 
 module.exports = {
   user_list_get,
   user_get_by_id,
   user_create,
-  check_username
-}
+  check_username,
+};

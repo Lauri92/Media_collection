@@ -14,6 +14,6 @@ router.post('/incrementlike/:id', likeController.create_user_like);
 router.post('/incrementdislike/:id', likeController.create_user_like);
 
 // Get status if user has liked yet or not
-router.get('/likestatus/:pic_id', likeController.like_status);
+router.get('/likestatus/:media_id', likeController.like_status);
 
 module.exports = router;
