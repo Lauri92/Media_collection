@@ -6,7 +6,7 @@ const promisePool = pool.promise();
 const getAllMedia = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype\n' +
+        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype, users.profile_picture\n' +
         'FROM users\n' +
         'INNER JOIN medias ON users.id = medias.user_id\n' +
         'ORDER BY medias.post_date DESC;');
@@ -20,7 +20,7 @@ const getAllMedia = async () => {
 const getAllPics = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype\n' +
+        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype, users.profile_picture\n' +
         ' FROM users \n' +
         '  INNER JOIN medias ON users.id = medias.user_id\n' +
         '   WHERE medias.mediatype = \'image\' \n' +
@@ -35,7 +35,7 @@ const getAllPics = async () => {
 const getAllVideos = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype \n' +
+        'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype, users.profile_picture \n' +
         ' FROM users \n' +
         '  INNER JOIN medias ON users.id = medias.user_id \n' +
         '   WHERE medias.mediatype = \'video\' \n' +
@@ -50,7 +50,7 @@ const getAllVideos = async () => {
 const getMediaByMostLikes = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT IFNULL(SUM(likes.likes), 0) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype\n' +
+        'SELECT IFNULL(SUM(likes.likes), 0) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype, users.profile_picture\n' +
         'FROM medias \n' +
         'LEFT JOIN likes ON medias.id = likes.media_id \n' +
         'LEFT JOIN users ON medias.user_id = users.id\n' +
@@ -80,7 +80,7 @@ const getMediaByOwner = async (user_id) => {
     console.log('mediaModel getMediaByOwner id:', user_id);
     if (user_id !== null) {
       const [rows] = await promisePool.execute(
-          'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.mediatype \n' +
+          'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.mediatype, users.profile_picture \n' +
           ' FROM users INNER JOIN medias ON users.id = medias.user_id\n' +
           '  WHERE users.id = ?\n' +
           '   ORDER BY medias.post_date DESC;', [user_id]);
@@ -99,7 +99,7 @@ const getChosenMediaByOwner = async (req) => {
     console.log('mediaModel getChosenMediaByOwner req.body:', req.body);
     if (req.body.user_id !== null) {
       const [rows] = await promisePool.execute(
-          'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.mediatype\n' +
+          'SELECT DISTINCT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.mediatype, users.profile_picture\n' +
           'FROM users INNER JOIN medias ON users.id = medias.user_id\n' +
           'WHERE users.id = ? AND\n' +
           'medias.mediatype = ? \n' +
@@ -113,13 +113,31 @@ const getChosenMediaByOwner = async (req) => {
   }
 };
 
+// Returns the count of chosen medias
+const getChosenMediaCountByOwner = async (req) => {
+  try {
+    console.log('mediaModel getChosenMediaCountByOwner req.body:', req.body);
+    if (req.body.user_id !== null) {
+      const [rows] = await promisePool.execute(
+          'SELECT COUNT(user_id) count\n' +
+          'FROM medias\n' +
+          'WHERE user_id = ? AND mediatype = ?;', [req.body.user_id, req.body.mediatype]);
+      return rows[0];
+    } else {
+      console.log('Not acceptable');
+    }
+  } catch (e) {
+    console.error('mediaModel getChosenMediaCountByOwner error:', e.message);
+  }
+};
+
 
 // Search all database descriptions and order by most liked
 const getMediaBySearch = async (input) => {
   try {
     console.log('mediaModel getMediaBySearch: ', input);
     const [rows] = await promisePool.execute(
-        'SELECT IFNULL(COUNT(likes.likes), null) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype\n' +
+        'SELECT IFNULL(COUNT(likes.likes), null) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype, users.profile_picture\n' +
         'FROM medias \n' +
         'LEFT JOIN likes ON medias.id = likes.media_id \n' +
         'LEFT JOIN users ON medias.user_id = users.id\n' +
@@ -197,7 +215,8 @@ module.exports = {
   getMediaUserId,
   deleteMedia,
   getChosenMediaByOwner,
-  getAllMedia
+  getAllMedia,
+  getChosenMediaCountByOwner
 };
 
 

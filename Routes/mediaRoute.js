@@ -52,6 +52,10 @@ router.route('/usermedia').get(mediaController.media_get_by_owner);
 router.route('/specifiedusermedia/video').get(mediaController.chosen_media_get_by_owner)
 router.route('/specifiedusermedia/image').get(mediaController.chosen_media_get_by_owner)
 
+// Get specified media count of user
+router.route('/specifiedusermediacount/video').get(mediaController.chosen_media_count_get_by_owner)
+router.route('/specifiedusermediacount/image').get(mediaController.chosen_media_count_get_by_owner)
+
 // Order all media by most likes
 router.get('/mostlikes', mediaController.media_list_get_by_most_likes);
 

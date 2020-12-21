@@ -33,6 +33,7 @@ const check_username = async (req, res) => {
   res.json({
     'name': req.user.name,
     'lastname': req.user.lastname,
+    'email': req.user.email,
     'profile_picture': req.user.profile_picture,
   });
 };

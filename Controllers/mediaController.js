@@ -171,6 +171,23 @@ const chosen_media_get_by_owner = async (req, res) => {
   await res.json(media);
 };
 
+// Get specified type of media of a user, path includes requested mediatype
+const chosen_media_count_get_by_owner = async (req, res) => {
+
+  req.body.user_id = req.user.id;
+
+  // Check request type
+  if (req.path.includes('image')) {
+    // Request was of type image
+    req.body.mediatype = 'image';
+  } else {
+    // ... it was video
+    req.body.mediatype = 'video';
+  }
+  const count = await mediaModel.getChosenMediaCountByOwner(req);
+  await res.json(count);
+};
+
 // Send true if user is the owner of media, else send false
 const get_media_user_id = async (req, res) => {
   const mediaOwner = await mediaModel.getMediaUserId(req.params.media_id);
@@ -226,4 +243,5 @@ module.exports = {
   video_list_get,
   chosen_media_get_by_owner,
   media_list_get,
+  chosen_media_count_get_by_owner
 };

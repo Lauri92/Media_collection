@@ -7,7 +7,7 @@ const promisePool = pool.promise();
 const getCommentsByPicId = async (id) => {
   try {
     const [rows] = await promisePool.execute(
-        `SELECT DISTINCT users.name, users.lastname, comments.comment, comments.media_id, comments.date, comments.id AS commentid 
+        `SELECT DISTINCT users.name, users.lastname, users.profile_picture, comments.comment, comments.media_id, comments.date, comments.id AS commentid 
  FROM users INNER JOIN comments ON users.id = comments.user_id 
   WHERE comments.media_id = ?
    ORDER BY comments.date DESC;`, [id]);

@@ -1,0 +1,69 @@
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.profile-information {
+    display: flex;
+    margin-top: 100px;
+}
+
+.user-information-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.document-user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-right: 50px;
+}
+
+.document-user-info img {
+    width: 43%;
+    border-radius: 50%;
+    margin-right: 15%;
+}
+
+.document-user-info img:hover {
+    transform: scale(1.10);
+}
+
+.user-name-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 50px;
+}
+
+.user-follow-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.content-container {
+    font-size: 25px;
+    margin-top: 50px;
+    border-bottom: 3px solid grey;
+}
+
+.user-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.image-amount:hover, .video-amount:hover, .user-likes:hover{
+    transform: scale(1.10);
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 415px) {
+    .user-information-container {
+        flex-direction: column;
+    }
+}

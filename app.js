@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const passport = require('./Utils/pass');
 const rootRoute = require('./Routes/rootRoute');
+const profileRoute = require('./Routes/profileRoute');
 const mediaRoute = require('./Routes/mediaRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
@@ -44,6 +45,7 @@ app.use('/notokenlikes', noTokenLikeRoute);
 app.use('/notokencomments', commentRoute);
 app.use('/media', passport.authenticate('jwt', {session: false}), mediaRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
+app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}),
     commentRoute);
