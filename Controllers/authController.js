@@ -55,6 +55,9 @@ const user_create_post = async (req, res, next) => {
         // Admin always defaults to 0, for now only manual SQL query on server / myphpadmin to set admins
         req.body.admin = 0;
 
+        // Insert placeholder image as profile pic
+        req.body.profile_picture = `portrait_placeholder.png`
+
         console.log('authController: salt and hash craeted, pw hashed');
 
         if (await userModel.insertUser(req)) {

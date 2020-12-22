@@ -42,7 +42,7 @@
 </main>
 
 <!--Register modal starts here-->
-<div class="register-modal" id="register-modal">
+<div class="interaction-modal" id="register-modal">
     <div class="register-container">
         <div class="header">
             <h2>Create Account</h2>
@@ -91,7 +91,7 @@
 
 
 <!-- Login modal starts here-->
-<div class="register-modal" id="login-modal">
+<div class="interaction-modal" id="login-modal">
     <div class="register-container">
         <div class="header">
             <h2>Login</h2>
@@ -113,7 +113,7 @@
 
 
 <!-- Add-media modal starts here-->
-<div class="register-modal" id="add-media-modal">
+<div class="interaction-modal" id="add-media-modal">
     <div class="register-container">
         <div class="header">
             <h2>Publish media</h2>
@@ -123,12 +123,12 @@
             <div class="form-control" id="description-form-control">
                 <label>Description</label>
                 <textarea type="text" name="description" placeholder="Sample description" required=""
-                          style="margin: 0;width: 100%;height: 10vh;"></textarea>
+                          ></textarea>
             </div>
             <div class="form-control">
                 <label>Choose a file, image or video<br>Max 50Mb</label>
-                <input id="img-input" type="file" name="pic" accept="image/*, video/*" placeholder="Choose file">
-                <img id="to-be-uploaded" alt="No Images Chosen">
+                <input class="img-input" type="file" name="pic" accept="image/*, video/*" placeholder="Choose file">
+                <img class="to-be-uploaded" alt="No Images Chosen">
             </div>
             <button type="submit">Publish</button>
         </form>

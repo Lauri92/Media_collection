@@ -8,18 +8,26 @@ const loginButton = document.querySelector('#login-button');
 const logoutButton = document.querySelector('#logout-button');
 const profileButton = document.querySelector('#profile-button');
 const addMediaButton = document.querySelector('#add-media-button');
-const closeButtons = document.getElementsByClassName('fa-times');
 const bigCardCloseButton = document.querySelector('.close-button');
 const bigCardMobileCloseButton = document.querySelector('.mobile-close-button');
+const closeButtons = document.getElementsByClassName('fa-times');
 const imageAmountButton = document.querySelector('.image-amount');
 const videoAmountButton = document.querySelector('.video-amount');
+const userProfilePicButton = document.querySelector('.user-profile-pic');
 
 //Modals
 const addMediaModal = document.querySelector('#add-media-modal');
 const bigCardModal = document.querySelector('.modal');
+const changeProfilePicModal = document.querySelector(
+    '#change-profile-pic-modal');
 
 // Forms
 const addMediaForm = document.querySelector('#add-media-form');
+const changeProfilePicForm = document.querySelector('#change-profile-pic-form');
+
+// Misc
+const imgInput = document.querySelector('.img-input');
+const profilePicInput = document.querySelector('.profile-pic-input');
 
 // Get images of logged in user
 const getUserImages = async () => {
@@ -53,7 +61,6 @@ const getUserImagesCount = async () => {
     console.log('imageCount: ', imageCount.count);
     const photoAmount = document.querySelector('.image-amount');
     photoAmount.innerHTML = `${imageCount.count} Images`;
-
 
   } catch (e) {
     console.log(e.message);
@@ -156,6 +163,7 @@ function setUserAslogged() {
   addMediaButton.style.display = 'flex';
 }
 
+// Get logged in users data
 const getLoggedUser = async () => {
   try {
     const options = {
@@ -170,11 +178,13 @@ const getLoggedUser = async () => {
     const userInfo = await response.json();
     console.log(userInfo);
 
+    // Clear img tag, needed to do in case user updates profile picture
+    profileButton.innerHTML = '';
     // Set profile picture in nav bar and in profile picture holder
     const profileImg = document.createElement('img');
     const bigProfileImg = document.querySelector('.user-profile-pic');
-    bigProfileImg.src = `./Thumbnails/${userInfo.profile_picture}`;
-    profileImg.src = `./Thumbnails/${userInfo.profile_picture}`;
+    bigProfileImg.src = `./Profilepics/${userInfo.profile_picture}`;
+    profileImg.src = `./Profilepics/${userInfo.profile_picture}`;
     profileButton.appendChild(profileImg);
 
     // Set username in user page
@@ -183,13 +193,97 @@ const getLoggedUser = async () => {
 
     // Set email in user page
     const userEmail = document.querySelector('.user-email');
-    userEmail.innerHTML = `${userInfo.email}`
-
+    userEmail.innerHTML = `${userInfo.email}`;
 
   } catch (e) {
     console.log(e.message);
   }
 };
+
+// All elements with class fa-times will get this eventlistener. (login, register, addMedia)
+Array.from(closeButtons).forEach(function(button) {
+  button.addEventListener('click', closeModals);
+});
+
+// Open modal for adding media
+addMediaButton.addEventListener('click', async (e) => {
+  console.log('clicked');
+  addMediaModal.style.display = 'flex';
+});
+
+// Set thumbnail of to-be-uploaded media
+imgInput.onchange = function() {
+  const reader = new FileReader();
+  // TODO: Check for video file too
+  reader.onload = function(e) {
+    // Get loaded data and render thumbnail.
+    document.querySelector('.to-be-uploaded-media').src = e.target.result;
+  };
+
+  // Read the image file as a data URL.
+  reader.readAsDataURL(this.files[0]);
+};
+
+// Add-media request
+// TODO: Add thumbnail for videos too
+addMediaForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(addMediaForm);
+  const fetchOptions = {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+    },
+    body: fd,
+  };
+  const response = await fetch(url + '/media', fetchOptions);
+  const json = await response.json();
+  console.log('add media response', json);
+  console.log('json.pick_id', json.id);
+  await getUserImagesCount();
+  await getUserVideosCount();
+  addMediaForm.reset();
+});
+
+// Open modal for changin profile picture
+userProfilePicButton.addEventListener('click', async () => {
+  console.log('Clicked big profile picture');
+  changeProfilePicModal.style.display = 'flex';
+});
+
+// Set thumbnail of to-be-uploaded profile-pic
+profilePicInput.onchange = function() {
+  const reader = new FileReader();
+  // TODO: Check for video file too
+  reader.onload = function(e) {
+    // Get loaded data and render thumbnail.
+    document.querySelector('.to-be-uploaded-profile-pic').src = e.target.result;
+  };
+
+  // Read the image file as a data URL.
+  reader.readAsDataURL(this.files[0]);
+};
+
+// Change profile pic request
+changeProfilePicForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  console.log('Attempt to change profile pic');
+  e.preventDefault();
+  const fd = new FormData(changeProfilePicForm);
+  const fetchOptions = {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+    },
+    body: fd,
+  };
+  const response = await fetch(url + '/user', fetchOptions);
+  const json = await response.json();
+  console.log('change profilepic response', json);
+  closeModals();
+  document.querySelector('.cards').innerHTML = ''
+  await getLoggedUser();
+});
 
 // Logout logged user
 logoutButton.addEventListener('click', async (e) => {
@@ -226,12 +320,18 @@ logoutButton.addEventListener('click', async (e) => {
 // Get users images
 imageAmountButton.addEventListener('click', async () => {
   await getUserImages();
-})
+});
 
 // Get users videos
 videoAmountButton.addEventListener('click', async () => {
   await getUserVideos();
-})
+});
+
+// Function to be called when closing modals
+function closeModals() {
+  addMediaModal.style.display = 'none';
+  changeProfilePicModal.style.display = 'none';
+}
 
 // Check for the token...if it exists do these
 const isToken = (sessionStorage.getItem('token'));
@@ -253,7 +353,6 @@ const createUi = async () => {
 };
 
 createUi();
-
 
 /**
  * Functions to create media cards on the page
@@ -378,7 +477,7 @@ const createBigCard = async (media) => {
         slice(0, -7);
 
     mediaOwner.innerHTML = `${media.name} ${media.lastname} @ ${postdate}`;
-    mediaOwnerProfilePic.src = `./Thumbnails/${media.profile_picture}`;
+    mediaOwnerProfilePic.src = `./Profilepics/${media.profile_picture}`;
     userInfoDiv.appendChild(mediaOwner);
     userInfoDiv.appendChild(mediaOwnerProfilePic);
 
@@ -418,7 +517,7 @@ const createBigCard = async (media) => {
       // Create img element for comment owner profile pic
       const commentOwnerProfilePic = document.createElement('img');
       commentOwnerProfilePic.className = 'comment-profile-pic';
-      commentOwnerProfilePic.src = `./Thumbnails/${comment.profile_picture}`;
+      commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
       commentContainerDiv.appendChild(commentOwnerProfilePic);
 
       // Create p element for user input date
@@ -556,7 +655,7 @@ const createBigCard = async (media) => {
           // Create img element for comment owner profile pic
           const commentOwnerProfilePic = document.createElement('img');
           commentOwnerProfilePic.className = 'comment-profile-pic';
-          commentOwnerProfilePic.src = `./Thumbnails/${comment.profile_picture}`;
+          commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
           commentContainerDiv.appendChild(commentOwnerProfilePic);
 
           // Create p element for user input date
@@ -589,8 +688,15 @@ const createBigCard = async (media) => {
 
     // Close big card and clear it by using innerHTML
     bigCardCloseButton.addEventListener('click', async (e) => {
+      await clearBigCard();
+    });
+
+    bigCardMobileCloseButton.addEventListener('click', async (e) => {
+      await clearBigCard();
+    });
+
+    async function clearBigCard() {
       bigCardModal.style.display = 'none';
-      // TODO: Remove created elements when closing the big card
 
       bigCardMediaDiv.innerHTML = '';
       userInfoDiv.innerHTML = '';
@@ -606,7 +712,7 @@ const createBigCard = async (media) => {
 
       // Allow scrolling again
       body.style.overflow = 'visible';
-    });
+    }
 
   } catch (e) {
     console.log(e.message);

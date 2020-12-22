@@ -24,7 +24,7 @@ const registerForm = document.querySelector('#register-form');
 const addMediaForm = document.querySelector('#add-media-form');
 
 // Misc
-const imgInput = document.querySelector('#img-input');
+const imgInput = document.querySelector('.img-input');
 
 /**
  * Function to create media cards on the page
@@ -64,7 +64,6 @@ registerButton.addEventListener('click', async (e) => {
 
 // Open modal for adding media
 addMediaButton.addEventListener('click', async (e) => {
-  //TODO: Open Modal
   console.log('clicked');
   addMediaModal.style.display = 'flex';
 });
@@ -101,12 +100,6 @@ logoutButton.addEventListener('click', async (e) => {
   }
 });
 
-// TODO: NOT WORKING
-// Close big card when in mobile mode (different close button)
-bigCardMobileCloseButton.addEventListener('submit', async (e) => {
-  console.log('clicked mobile close button');
-  bigCardModal.style.display = 'none';
-});
 
 // All elements with class fa-times will get this eventlistener. (login, register, addMedia)
 Array.from(closeButtons).forEach(function(button) {
@@ -289,7 +282,7 @@ const getLoggedUser = async () => {
 
     // Set profile picture in nav bar
     const profileImg = document.createElement('img');
-    profileImg.src = `./Thumbnails/${userInfo.profile_picture}`;
+    profileImg.src = `./Profilepics/${userInfo.profile_picture}`;
     profileButton.appendChild(profileImg);
 
   } catch (e) {
@@ -310,13 +303,13 @@ function setUserAslogged() {
   addMediaButton.style.display = 'flex';
 }
 
-// Set thumbnail of to-be-uploaded photo
+// Set thumbnail of to-be-uploaded media
 imgInput.onchange = function() {
   const reader = new FileReader();
   // TODO: Check for video file too
   reader.onload = function(e) {
     // Get loaded data and render thumbnail.
-    document.getElementById('to-be-uploaded').src = e.target.result;
+    document.querySelector('.to-be-uploaded').src = e.target.result;
   };
 
   // Read the image file as a data URL.
@@ -510,7 +503,7 @@ const createBigCard = async (media) => {
         slice(0, -7);
 
     mediaOwner.innerHTML = `${media.name} ${media.lastname} @ ${postdate}`;
-    mediaOwnerProfilePic.src = `./Thumbnails/${media.profile_picture}`;
+    mediaOwnerProfilePic.src = `./Profilepics/${media.profile_picture}`;
     userInfoDiv.appendChild(mediaOwner);
     userInfoDiv.appendChild(mediaOwnerProfilePic);
 
@@ -550,7 +543,7 @@ const createBigCard = async (media) => {
       // Create img element for comment owner profile pic
       const commentOwnerProfilePic = document.createElement('img');
       commentOwnerProfilePic.className = 'comment-profile-pic';
-      commentOwnerProfilePic.src = `./Thumbnails/${comment.profile_picture}`;
+      commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
       commentContainerDiv.appendChild(commentOwnerProfilePic);
 
       // Create p element for user input date
@@ -688,7 +681,7 @@ const createBigCard = async (media) => {
           // Create img element for comment owner profile pic
           const commentOwnerProfilePic = document.createElement('img');
           commentOwnerProfilePic.className = 'comment-profile-pic';
-          commentOwnerProfilePic.src = `./Thumbnails/${comment.profile_picture}`;
+          commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
           commentContainerDiv.appendChild(commentOwnerProfilePic);
 
           // Create p element for user input date
@@ -721,8 +714,16 @@ const createBigCard = async (media) => {
 
     // Close big card and clear it by using innerHTML
     bigCardCloseButton.addEventListener('click', async (e) => {
+      await clearBigCard();
+    });
+
+    // For mobile version button
+    bigCardMobileCloseButton.addEventListener('click', async (e) => {
+      await clearBigCard();
+    });
+
+    async function clearBigCard() {
       bigCardModal.style.display = 'none';
-      // TODO: Remove created elements when closing the big card
 
       bigCardMediaDiv.innerHTML = '';
       userInfoDiv.innerHTML = '';
@@ -738,7 +739,7 @@ const createBigCard = async (media) => {
 
       // Allow scrolling again
       body.style.overflow = 'visible';
-    });
+    }
 
   } catch (e) {
     console.log(e.message);
