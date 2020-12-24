@@ -22,6 +22,7 @@ const bigCardModal = document.querySelector('.modal');
 const loginForm = document.querySelector('#login-form');
 const registerForm = document.querySelector('#register-form');
 const addMediaForm = document.querySelector('#add-media-form');
+const searchForm = document.querySelector('#search-form');
 
 // Misc
 const imgInput = document.querySelector('.img-input');
@@ -31,6 +32,7 @@ const imgInput = document.querySelector('.img-input');
  */
 const createMediaCards = async (content) => {
   console.log(content);
+  document.querySelector('.cards').innerHTML = '';
   try {
     for await (const media of content) {
 
@@ -195,6 +197,23 @@ addMediaForm.addEventListener('submit', async (e) => {
   console.log('add media response', json);
   console.log('json.pick_id', json.id);
 });
+
+// Search for media
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fetchOptions = {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      'Content-Type': 'application/json',
+    },
+  };
+  const response = await fetch(
+      url + '/media/search/' + document.querySelector('#search-form input').value,
+      fetchOptions);
+  const json = await response.json();
+  console.log('/media/search/ response', json);
+  await createMediaCards(json);
+})
 
 /**
  * Functions containing a request to server

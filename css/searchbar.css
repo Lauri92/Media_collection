@@ -1,0 +1,42 @@
+
+.search-div {
+    margin-top: 100px;
+}
+
+#search-form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Style the search field */
+#search-form input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    width: 55%;
+    background: #f1f1f1;
+}
+
+/* Style the submit button */
+#search-form button {
+    width: 7.5%;
+    padding: 10px;
+    background: #000000;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none; /* Prevent double borders */
+    cursor: pointer;
+}
+
+#search-form button:hover {
+    background: #4f5154;
+}
+
+/* Clear floats */
+#search-form::after {
+    content: "";
+    clear: both;
+    display: table;
+}

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/smallcard.css">
     <link rel="stylesheet" href="css/modals.css">
     <link rel="stylesheet" href="css/bigcard.css">
+    <link rel="stylesheet" href="css/searchbar.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/2d155bb92d.js" crossorigin="anonymous"></script>
@@ -28,12 +29,23 @@
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-around; flex-wrap: wrap">
                 <i style="margin-bottom: -15px" class="fas fa-plus"></i>
                 <p>Add media</p>
-            </div></li>
-        <a href="./profilePage.html"><li class="nav-item" id="profile-button"></li></a>
+            </div>
+        </li>
+        <a href="./profilePage.html">
+            <li class="nav-item" id="profile-button"></li>
+        </a>
     </ul>
 </nav>
 
 <main>
+    <!-- Search form -->
+    <div class="search-div">
+        <form id="search-form">
+            <input type="text" placeholder="Search.." name="search" pattern=".{3,}">
+            <button type="submit"><i class="fa fa-search"></i></button>
+        </form>
+    </div>
+
     <div class="container">
         <div class="cards">
             <!-- Small cards go here -->
@@ -123,7 +135,7 @@
             <div class="form-control" id="description-form-control">
                 <label>Description</label>
                 <textarea type="text" name="description" placeholder="Sample description" required=""
-                          ></textarea>
+                ></textarea>
             </div>
             <div class="form-control">
                 <label>Choose a file, image or video<br>Max 50Mb</label>
@@ -152,7 +164,7 @@
                 </svg>
             </p>
             <div class="big-card-media">
-            <!--Image or video goes here -->
+                <!--Image or video goes here -->
             </div>
             <div class="big-card-info">
                 <div class="mobile-close">
