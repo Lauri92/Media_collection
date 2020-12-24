@@ -19,7 +19,7 @@
 <nav class="navbar">
     <ul class="navbar-nav">
         <a href="/">
-        <li class="nav-item" >Media Collection</li>
+            <li class="nav-item">Media Collection</li>
         </a>
         <li class="nav-item" id="register-button">Register</li>
         <li class="nav-item" id="login-button">Login</li>
@@ -71,6 +71,24 @@
     </div>
 </main>
 
+<!-- Delete media modal starts here-->
+<div class="interaction-modal" id="delete-media-modal">
+    <div class="register-container">
+        <div class="header">
+            <h2>Are you sure you want to remove this image / video?</h2>
+            <i id="delete-close-button" class="fas fa-times"></i>
+        </div>
+
+        <form id="delete-media-form" class="form">
+            <!-- image goes here-->
+            <div class="form-control">
+                <button type="button" class="delete-button">Delete</button>
+                <button type="button" class="cancel-button">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Add-media modal starts here -->
 <div class="interaction-modal" id="add-media-modal">
     <div class="register-container">
@@ -82,7 +100,7 @@
             <div class="form-control" id="description-form-control">
                 <label>Description</label>
                 <textarea type="text" name="description" placeholder="Sample description" required=""
-                          ></textarea>
+                ></textarea>
             </div>
             <div class="form-control">
                 <label>Choose a file, image or video<br>Max 50Mb</label>
@@ -104,7 +122,8 @@
         <form enctype="multipart/form-data" id="change-profile-pic-form" class="form">
             <div class="form-control">
                 <label>Choose an image<br>Max 50Mb</label>
-                <input class="profile-pic-input" type="file" name="profile-pic" accept="image/*" placeholder="Choose file">
+                <input class="profile-pic-input" type="file" name="profile-pic" accept="image/*"
+                       placeholder="Choose file">
                 <img class="to-be-uploaded-profile-pic" alt="No Image Chosen">
             </div>
             <button type="submit">Upload new profile picture</button>
@@ -131,7 +150,7 @@
             </div>
             <div class="big-card-info">
                 <div class="mobile-close">
-                    <p class="mobile-close-button"><i class="fas fa-times"></i></p>
+                    <i class="mobile-close-button fas fa-times"></i><i class="fa fa-trash" aria-hidden="true"></i>
                 </div>
                 <div class="user-info">
                     <!-- Media owner name goes here-->

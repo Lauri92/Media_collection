@@ -10,16 +10,21 @@ const profileButton = document.querySelector('#profile-button');
 const addMediaButton = document.querySelector('#add-media-button');
 const bigCardCloseButton = document.querySelector('.close-button');
 const bigCardMobileCloseButton = document.querySelector('.mobile-close-button');
+const bigCardMobileDeleteButton = document.querySelector('.fa-trash');
 const closeButtons = document.getElementsByClassName('fa-times');
 const imageAmountButton = document.querySelector('.image-amount');
 const videoAmountButton = document.querySelector('.video-amount');
 const userProfilePicButton = document.querySelector('.user-profile-pic');
+const deleteButton = document.querySelector('.delete-button');
+const cancelButton = document.querySelector('.cancel-button');
+const deleteCloseButton = document.querySelector('#delete-close-button');
 
 //Modals
 const addMediaModal = document.querySelector('#add-media-modal');
 const bigCardModal = document.querySelector('.modal');
 const changeProfilePicModal = document.querySelector(
     '#change-profile-pic-modal');
+const deleteMediaModal = document.querySelector('#delete-media-modal');
 
 // Forms
 const addMediaForm = document.querySelector('#add-media-form');
@@ -245,7 +250,7 @@ addMediaForm.addEventListener('submit', async (e) => {
   addMediaForm.reset();
 });
 
-// Open modal for changin profile picture
+// Open modal for changing profile picture
 userProfilePicButton.addEventListener('click', async () => {
   console.log('Clicked big profile picture');
   changeProfilePicModal.style.display = 'flex';
@@ -281,7 +286,7 @@ changeProfilePicForm.addEventListener('submit', async (e) => {
   const json = await response.json();
   console.log('change profilepic response', json);
   closeModals();
-  document.querySelector('.cards').innerHTML = ''
+  document.querySelector('.cards').innerHTML = '';
   await getLoggedUser();
 });
 
@@ -331,11 +336,13 @@ videoAmountButton.addEventListener('click', async () => {
 function closeModals() {
   addMediaModal.style.display = 'none';
   changeProfilePicModal.style.display = 'none';
+  deleteMediaModal.style.display = 'none';
 }
 
 // Check for the token...if it exists do these
 const isToken = (sessionStorage.getItem('token'));
 
+// Create UI for the logged in user
 const createUi = async () => {
   try {
     if (isToken) {
@@ -388,8 +395,10 @@ const createSmallCards = async (media) => {
   const smallCardVid = document.createElement('video');
   const smallCardInfo = document.createElement('div');
   smallCardInfo.className = 'info';
+  const smallcardH2 = document.createElement('h2');
   const smallCardH1 = document.createElement('h1');
   const smallCardP = document.createElement('p');
+
   // Place information to cards
   //Check if the media is image or video and only create either one
   if (media.mediatype === 'image') {
@@ -399,6 +408,9 @@ const createSmallCards = async (media) => {
     smallCardVid.src = url + '/Uploads/' + media.filename;
     smallCardDiv.appendChild(smallCardVid);
   }
+
+  // Add text which indicates possibility of removing hovered media
+  smallcardH2.innerHTML = 'DELETE';
 
   // Add media owners name and last name to card
   smallCardH1.innerHTML = `${media.name} ${media.lastname}`;
@@ -428,11 +440,71 @@ const createSmallCards = async (media) => {
     console.log(e.message);
   }
 
+  smallCardInfo.appendChild(smallcardH2);
   smallCardInfo.appendChild(smallCardH1);
   smallCardInfo.appendChild(smallCardP);
 
   smallCardDiv.appendChild(smallCardInfo);
   cards.appendChild(smallCardDiv);
+
+  // Add event listener to DELETE text to allow deletion of media
+  smallcardH2.addEventListener('click', async (e) => {
+    e.stopPropagation();  // Stop element below being clickable too
+    console.log(`Clicked DELETE @ media with id ${media.id}`);
+
+    deleteMediaModal.style.display = 'flex';
+    deleteButton.addEventListener('click', deletePic);
+    cancelButton.addEventListener('click', leaveDeleteModal);
+    deleteCloseButton.addEventListener('click', leaveDeleteModal);
+
+    // Check what we are deleting and create appropriate deletion thumbnail
+    if (media.mediatype === 'image') {
+      const smallCardMediaDeleteThumbnail = document.createElement('img');
+      smallCardMediaDeleteThumbnail.id = 'smallCardMediaDeleteThumbnail';
+      smallCardMediaDeleteThumbnail.src = '/Thumbnails/' + media.filename;
+      const deleteMediaForm = document.querySelector('#delete-media-form');
+      deleteMediaForm.insertBefore(smallCardMediaDeleteThumbnail,
+          deleteMediaForm.firstChild);
+    } else {
+      const smallCardMediaDeleteThumbnail = document.createElement('video');
+      smallCardMediaDeleteThumbnail.id = 'smallCardMediaDeleteThumbnail';
+      smallCardMediaDeleteThumbnail.src = '/Uploads/' + media.filename;
+      const deleteMediaForm = document.querySelector('#delete-media-form');
+      deleteMediaForm.insertBefore(smallCardMediaDeleteThumbnail,
+          deleteMediaForm.firstChild);
+    }
+
+    async function deletePic() {
+      console.log(`deleteButton @ ${media.id} pressed.`);
+      try {
+        const options = {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+          },
+        };
+        console.log(options);
+        const response = await fetch(
+            url + '/media/delete/' + media.id, options);
+        const json = await response.json();
+        console.log('Delete response: ', json);
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+
+    async function leaveDeleteModal() {
+      console.log(`cancelButton @ ${media.id} pressed.`);
+      console.log(`deleteCloseButton @ ${media.id} pressed.`);
+      deleteMediaModal.style.display = 'none';
+      deleteButton.removeEventListener('click', deletePic);
+      cancelButton.removeEventListener('click', leaveDeleteModal);
+      deleteCloseButton.removeEventListener('click', leaveDeleteModal);
+      //deletePicThumbnail.remove();
+      document.querySelector('#smallCardMediaDeleteThumbnail').remove();
+    }
+
+  });
 
   // Add event listener to create a big card
   smallCardDiv.addEventListener('click', async () => {
@@ -553,11 +625,9 @@ const createBigCard = async (media) => {
       if (undefined === mediaLikes[0]) {
         // No likes
         bigCardLikes.innerHTML = '0';
-        //inputLikes.insertBefore(bigCardLikes, inputLikes.firstChild);
       } else {
         // Has likes
         bigCardLikes.innerHTML = `${mediaLikes[0].likes}`;
-        //inputLikes.insertBefore(bigCardLikes, inputLikes.firstChild);
       }
 
     } catch (e) {
@@ -686,12 +756,78 @@ const createBigCard = async (media) => {
       }
     }
 
+    // Add event listener for deleting pics in mobile view
+    // Button which opens the delete modal
+    bigCardMobileDeleteButton.addEventListener('click', openDeleteModal);
+
+    async function openDeleteModal() {
+      console.log(`Clicked DELETE @ media with id ${media.id}`);
+      console.log('bigCardMobileDeleteButton pressed');
+      // Show the deletion modal
+      deleteMediaModal.style.display = 'flex';
+      // Button which deletes
+      deleteButton.addEventListener('click', deletePic);
+      // Buttons which leaves from the delete modal
+      cancelButton.addEventListener('click', leaveDeleteModal);
+      deleteCloseButton.addEventListener('click', leaveDeleteModal);
+
+      // Check what the user is deleting to create appropriate deletion thumbnail for image / video
+      if (media.mediatype === 'image') {
+        const deleteMediaThumbnail = document.createElement('img');
+        deleteMediaThumbnail.id = 'delete-media-thumbnail';
+        deleteMediaThumbnail.src = '/Thumbnails/' + media.filename;
+        const deleteMediaForm = document.querySelector('#delete-media-form');
+        deleteMediaForm.insertBefore(deleteMediaThumbnail,
+            deleteMediaForm.firstChild);
+      } else {
+        const deleteMediaThumbnail = document.createElement('video');
+        deleteMediaThumbnail.id = 'delete-media-thumbnail';
+        deleteMediaThumbnail.src = '/Uploads/' + media.filename;
+        const deleteMediaForm = document.querySelector('#delete-media-form');
+        deleteMediaForm.insertBefore(deleteMediaThumbnail,
+            deleteMediaForm.firstChild);
+      }
+
+    }
+
+    async function deletePic() {
+      console.log(`deleteButton @ ${media.id} pressed.`);
+      try {
+        const options = {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+          },
+        };
+        console.log(options);
+        const response = await fetch(
+            url + '/media/delete/' + media.id, options);
+        const json = await response.json();
+        console.log('Delete response: ', json);
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+
+    // Clear event listeners from opened modal, also remove the image representing the image to be removed
+    async function leaveDeleteModal() {
+      console.log(`cancelButton @ ${media.id} pressed.`);
+      console.log(`deleteCloseButton @ ${media.id} pressed.`);
+      deleteMediaModal.style.display = 'none';
+      deleteButton.removeEventListener('click', deletePic);
+      cancelButton.removeEventListener('click', leaveDeleteModal);
+      deleteCloseButton.removeEventListener('click', leaveDeleteModal);
+      document.querySelector('#delete-media-thumbnail').remove();
+    }
+
     // Close big card and clear it by using innerHTML
     bigCardCloseButton.addEventListener('click', async (e) => {
       await clearBigCard();
     });
 
+    //Visible only in mobile view
     bigCardMobileCloseButton.addEventListener('click', async (e) => {
+      bigCardMobileDeleteButton.removeEventListener('click', openDeleteModal);
       await clearBigCard();
     });
 

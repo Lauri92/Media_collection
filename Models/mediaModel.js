@@ -195,7 +195,7 @@ const deleteMedia = async (media_id) => {
     const [rows] = await promisePool.execute(
         'DELETE FROM medias WHERE id = ?', [media_id]);
     const [rows2] = await promisePool.execute(
-        'DELETE FROM wop_testcomments WHERE media_id = ?', [media_id]);
+        'DELETE FROM comments WHERE media_id = ?', [media_id]);
     const [rows3] = await promisePool.execute(
         'DELETE FROM likes WHERE media_id = ?', [media_id]);
     return 'deleted media and associated likes and comments';

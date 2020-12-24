@@ -100,7 +100,6 @@ logoutButton.addEventListener('click', async (e) => {
   }
 });
 
-
 // All elements with class fa-times will get this eventlistener. (login, register, addMedia)
 Array.from(closeButtons).forEach(function(button) {
   button.addEventListener('click', closeModals);

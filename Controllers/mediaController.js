@@ -224,8 +224,8 @@ const media_delete = async (req, res) => {
       });
     }
     // query to delete reference from db
-    const picDeleted = await mediaModel.deleteMedia(req.params.pic_id);
-    await res.json(picDeleted);
+    const mediaDeleted = await mediaModel.deleteMedia(req.params.media_id);
+    await res.json(mediaDeleted);
   }
   //TODO: Handle wrong user... Shouldn't happen
   await res.json({response: 'Wrong user'})

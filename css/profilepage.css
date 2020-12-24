@@ -21,7 +21,7 @@ a {
 }
 
 .document-user-info img {
-    width: 43%;
+    width: 25%;
     border-radius: 50%;
     margin-right: 15%;
 }
@@ -62,12 +62,16 @@ a {
     cursor: pointer;
 }
 
-@media only screen and (max-width: 440px) {
-    .user-information-container {
-        flex-direction: column;
-    }
+@media only screen and (max-width: 600px) {
 
     .document-user-info img {
         margin-right: 5%;
+        width: 50%;
+    }
+}
+
+@media only screen and (max-width: 440px) {
+    .user-information-container {
+        flex-direction: column;
     }
 }

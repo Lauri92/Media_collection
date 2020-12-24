@@ -124,6 +124,7 @@
     width: 75%;
     height: 500px;
     padding: 0 5px 0 5px;
+    border-left: 1px solid black;
 }
 
 .big-card-info .mobile-close {
@@ -154,7 +155,8 @@
 }
 
 .big-card-info .comments {
-    height: 54%;
+    /*height: 54%; THIS ONE WORKS for sure..*/
+    height: 100%;
     overflow: auto;
     border-bottom: 1px solid grey;
 }
@@ -177,11 +179,11 @@
 }
 
 .big-card-info .interactions {
-    margin: 0 0 -8px 0;
+    margin: 0 0 0 0;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    height: 11%;
+    height: 9%;
 }
 
 .big-card-info .interactions svg {
@@ -269,12 +271,16 @@
 
         display: block;
 
-        padding: 0 0 0 0;
+        padding: 5px 0 0 0;
     }
 
     .big-card-info .mobile-close-button {
-        font-size: 20px;
-        margin: 0 0 0 0;
+        font-size: 15px;
+        margin: 0 35px 0 0;
+    }
+
+    .big-card-info .fa-trash {
+        font-size: 15px;
     }
 
     .big-card-info .user-info img {
@@ -289,5 +295,33 @@
         height: 30%;
         width: 100%;
         margin: 0 0 0 0;
+    }
+}
+
+@media only screen and (max-height: 415px) {
+
+    .boxes {
+        height: 305px;
+    }
+
+    .big-card-info {
+        height: 305px;
+    }
+
+    .big-card-info .interactions {
+        height: 12%;
+    }
+
+    .big-card-info .post-comment-section {
+        height: 19%;
+    }
+
+    .big-card-info .user-info img {
+        width: 2em;
+        height: 2em;
+    }
+
+    .close-button {
+        right: 0;
     }
 }
