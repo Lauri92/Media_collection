@@ -43,8 +43,9 @@ router.route('/specifiedusermediacount/image').get(mediaController.chosen_media_
 // Order all media by most likes
 router.get('/mostlikes', mediaController.media_list_get_by_most_likes);
 
-// Order all media by search input
-router.get('/search/:input', mediaController.media_list_get_by_search);
+// Order all media by search input, search descriptions or tags
+router.get('/search/descriptions/:input', mediaController.media_list_get_by_search);
+router.get('/search/tags/:input', mediaController.media_list_get_by_search);
 
 // Get logged in users media by id
 router.get('/picuserid/:media_id', mediaController.get_media_user_id);

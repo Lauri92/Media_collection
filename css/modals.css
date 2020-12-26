@@ -164,3 +164,11 @@
 .cancel-button {
 
 }
+
+@media only screen and (max-width: 550px) {
+
+    #add-media-modal img {
+        height: 100px;
+    }
+
+}

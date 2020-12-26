@@ -40,11 +40,23 @@
 <main>
     <!-- Search form -->
     <div class="search-div">
+        <h1>Explore...</h1>
         <form id="search-form">
-            <input type="text" placeholder="Search.." name="search" pattern=".{3,}">
-            <button type="submit"><i class="fa fa-search"></i></button>
+            <input type="text" placeholder="Search media, users, tags.." name="search" pattern=".{3,}">
+            <div class="buttons">
+                <button type=button class="option-button photo-video-button"><i class="fas fa-photo-video"></i></button>
+                <button type=button class="option-button users-button"><i class="fas fa-users"></i></button>
+                <button type=button class="option-button hashtags-button"><i class="fas fa-hashtag"></i></button>
+                <button class="default submit-button" type="submit"><i class="fa fa-search"></i></button>
+            </div>
         </form>
     </div>
+
+    <!-- Tooltip
+    <div class="tooltip">Hover over me
+        <span class="tooltiptext">Tooltip text</span>
+    </div>-->
+
 
     <div class="container">
         <div class="cards">

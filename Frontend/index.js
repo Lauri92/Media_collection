@@ -24,7 +24,13 @@ const registerForm = document.querySelector('#register-form');
 const addMediaForm = document.querySelector('#add-media-form');
 const searchForm = document.querySelector('#search-form');
 
-// Misc
+// Search bar buttons control
+const searchMedias = document.querySelector('.photo-video-button');
+const searchUsers = document.querySelector('.users-button');
+const searchTags = document.querySelector('.hashtags-button');
+let searchFor = 'descriptions';
+
+// Control the thumbnail image for uploads
 const imgInput = document.querySelector('.img-input');
 
 /**
@@ -197,7 +203,7 @@ addMediaForm.addEventListener('submit', async (e) => {
   const json = await response.json();
   console.log('add media response', json);
   console.log('json.media_id', json.id);
-  addMediaForm.reset()
+  addMediaForm.reset();
   document.querySelector('#fileinput-form-control').value = '';
   document.querySelector('.to-be-uploaded-media').src = '';
   addMediaModal.style.display = 'none';
@@ -213,13 +219,44 @@ searchForm.addEventListener('submit', async (e) => {
       'Content-Type': 'application/json',
     },
   };
-  const response = await fetch(
-      url + '/media/search/' + document.querySelector('#search-form input').value,
+  const response = await fetch(url + '/media/search/' + searchFor + '/' + document.querySelector('#search-form input').value,
       fetchOptions);
   const json = await response.json();
-  console.log('/media/search/ response', json);
+  console.log('/media/search/' + searchFor + '/', json);
   await createMediaCards(json);
-})
+});
+
+// Change search content to descriptions of images
+searchMedias.addEventListener('click', async (e) => {
+  e.preventDefault();
+  searchMedias.style.border = '5px solid #2c860c';
+  searchTags.style.border = 'none';
+  searchUsers.style.border = 'none';
+  document.querySelector(
+      '#search-form input').placeholder = 'Search for images and videos...';
+  searchFor = 'descriptions';
+});
+
+// Change search content to tags of images
+searchTags.addEventListener('click', async (e) => {
+  e.preventDefault();
+  searchMedias.style.border = 'none';
+  searchTags.style.border = '5px solid #2c860c';
+  searchUsers.style.border = 'none';
+  document.querySelector('#search-form input').placeholder = 'Search by tag...';
+  searchFor = 'tags';
+});
+
+// Change search content to users
+searchUsers.addEventListener('click', async (e) => {
+  e.preventDefault();
+  searchMedias.style.border = 'none';
+  searchTags.style.border = 'none';
+  searchUsers.style.border = '5px solid #2c860c';
+  document.querySelector(
+      '#search-form input').placeholder = 'Search for users...';
+  searchFor = 'users';
+});
 
 /**
  * Functions containing a request to server
@@ -285,7 +322,7 @@ const getHashtags = async (media_id) => {
   } catch (e) {
     console.log(e.message);
   }
-}
+};
 
 // Checks if the user has liked the photo already
 const getLikeStatus = async (media_id) => {

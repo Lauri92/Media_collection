@@ -103,7 +103,8 @@ const getChosenMediaByOwner = async (req) => {
           'FROM users INNER JOIN medias ON users.id = medias.user_id\n' +
           'WHERE users.id = ? AND\n' +
           'medias.mediatype = ? \n' +
-          'ORDER BY medias.post_date DESC;', [req.body.user_id, req.body.mediatype]);
+          'ORDER BY medias.post_date DESC;',
+          [req.body.user_id, req.body.mediatype]);
       return rows;
     } else {
       console.log('Not acceptable');
@@ -121,7 +122,8 @@ const getChosenMediaCountByOwner = async (req) => {
       const [rows] = await promisePool.execute(
           'SELECT COUNT(user_id) count\n' +
           'FROM medias\n' +
-          'WHERE user_id = ? AND mediatype = ?;', [req.body.user_id, req.body.mediatype]);
+          'WHERE user_id = ? AND mediatype = ?;',
+          [req.body.user_id, req.body.mediatype]);
       return rows[0];
     } else {
       console.log('Not acceptable');
@@ -131,11 +133,10 @@ const getChosenMediaCountByOwner = async (req) => {
   }
 };
 
-
 // Search all database descriptions for matching input and order by most liked
-const getMediaBySearch = async (input) => {
+const getMediaBySearchDescriptions = async (input) => {
   try {
-    console.log('mediaModel getMediaBySearch: ', input);
+    console.log('mediaModel getMediaBySearchDescriptions: ', input);
     const [rows] = await promisePool.execute(
         'SELECT IFNULL(COUNT(likes.likes), null) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype, users.profile_picture\n' +
         'FROM medias \n' +
@@ -144,6 +145,25 @@ const getMediaBySearch = async (input) => {
         'WHERE medias.description LIKE ? \n' +
         'group by medias.id\n' +
         'ORDER BY LIKES DESC;', [input]);
+    return rows;
+  } catch (e) {
+    console.error(e.message);
+  }
+};
+
+// Search all database descriptions for matching input and order by most liked
+const getMediaBySearchTags = async (input) => {
+  try {
+    console.log('mediaModel getMediaBySearchDescriptions: ', input);
+    const [rows] = await promisePool.execute(
+        `SELECT IFNULL(COUNT(likes.likes), null) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype, users.profile_picture, hashtags.tag
+             FROM medias
+             LEFT JOIN likes ON medias.id = likes.media_id
+             LEFT JOIN users ON medias.user_id = users.id
+             LEFT JOIN hashtags on medias.id = hashtags.media_id
+             WHERE hashtags.tag LIKE ?
+             GROUP BY medias.id
+             ORDER BY LIKES DESC;`, [input]);
     return rows;
   } catch (e) {
     console.error(e.message);
@@ -214,12 +234,13 @@ module.exports = {
   getMediaByOwner,
   insertMedia,
   getMediaByMostLikes,
-  getMediaBySearch,
+  getMediaBySearchDescriptions,
   getMediaUserId,
   deleteMedia,
   getChosenMediaByOwner,
   getAllMedia,
-  getChosenMediaCountByOwner
+  getChosenMediaCountByOwner,
+  getMediaBySearchTags,
 };
 
 

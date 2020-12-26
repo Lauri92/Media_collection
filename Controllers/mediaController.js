@@ -35,8 +35,15 @@ const media_list_get_by_most_likes = async (req, res) => {
 const media_list_get_by_search = async (req, res) => {
   const input = '%' + req.params.input + '%';
   console.log(input);
-  const media = await mediaModel.getMediaBySearch(input);
-  await res.json(media);
+  if (req.path.includes('descriptions')) {
+    // User searched by descriptions
+    const media = await mediaModel.getMediaBySearchDescriptions(input);
+    await res.json(media);
+    //User searched by tags
+  } else if (req.path.includes('tags')) {
+    const media = await mediaModel.getMediaBySearchTags(input);
+    await res.json(media);
+  }
 };
 
 // Controller for Creating media
@@ -151,7 +158,6 @@ const media_create = async (req, res) => {
     console.log(`Inserting ${tag} in for of loop`);
     await hashtagModel.insertHashtags(req);
   }
-
 
   //Query for media which was inserted
   const media = await mediaModel.getMediaById(id);
