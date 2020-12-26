@@ -649,6 +649,7 @@ const createBigCard = async (media) => {
       heart.style.cursor = 'pointer';
     }
 
+    // When user presses heart, and hasn't liked before
     async function likeMedia() {
       try {
         const options = {
@@ -779,6 +780,9 @@ const createBigCard = async (media) => {
       allComments.innerHTML = '';
 
       heart.style.color = '#8f8b8b';
+
+      //Remove event listener from like button (heart)
+      heart.removeEventListener('click', likeMedia);
 
       // Remove event listener from the form to not stack event listeners on top of same form
       commentForm.removeEventListener('submit', postComment);
