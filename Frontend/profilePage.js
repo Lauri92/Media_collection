@@ -229,6 +229,7 @@ Array.from(closeButtons).forEach(function(button) {
 addMediaButton.addEventListener('click', async (e) => {
   console.log('clicked');
   addMediaModal.style.display = 'flex';
+  body.style.overflow = 'hidden';
 });
 
 // Set thumbnail of to-be-uploaded media
@@ -266,6 +267,7 @@ addMediaForm.addEventListener('submit', async (e) => {
   document.querySelector('#fileinput-form-control').value = '';
   document.querySelector('.to-be-uploaded-media').src = '';
   addMediaModal.style.display = 'none';
+  body.style.overflow = 'visible';
 });
 
 // Open modal for changing profile picture
@@ -355,6 +357,7 @@ function closeModals() {
   addMediaModal.style.display = 'none';
   changeProfilePicModal.style.display = 'none';
   deleteMediaModal.style.display = 'none';
+  body.style.overflow = 'visible';
 }
 
 // Check for the token...if it exists do these
@@ -506,6 +509,13 @@ const createSmallCards = async (media) => {
             url + '/media/delete/' + media.id, options);
         const json = await response.json();
         console.log('Delete response: ', json);
+        body.style.overflow = 'visible';
+        deleteMediaModal.style.display = 'none';
+        if (media.mediatype === 'image') {
+          await getUserImages();
+        } else {
+          await getUserVideos();
+        }
       } catch (e) {
         console.log(e.message);
       }

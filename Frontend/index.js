@@ -68,6 +68,7 @@ registerButton.addEventListener('click', async (e) => {
 addMediaButton.addEventListener('click', async (e) => {
   console.log('clicked');
   addMediaModal.style.display = 'flex';
+  body.style.overflow = 'hidden';
 });
 
 // Logout logged user
@@ -196,6 +197,11 @@ addMediaForm.addEventListener('submit', async (e) => {
   const json = await response.json();
   console.log('add media response', json);
   console.log('json.media_id', json.id);
+  addMediaForm.reset()
+  document.querySelector('#fileinput-form-control').value = '';
+  document.querySelector('.to-be-uploaded-media').src = '';
+  addMediaModal.style.display = 'none';
+  body.style.overflow = 'visible';
 });
 
 // Search for media
@@ -342,7 +348,7 @@ imgInput.onchange = function() {
   // TODO: Check for video file too
   reader.onload = function(e) {
     // Get loaded data and render thumbnail.
-    document.querySelector('.to-be-uploaded').src = e.target.result;
+    document.querySelector('.to-be-uploaded-media').src = e.target.result;
   };
 
   // Read the image file as a data URL.
@@ -354,6 +360,7 @@ function closeModals() {
   loginModal.style.display = 'none';
   registerModal.style.display = 'none';
   addMediaModal.style.display = 'none';
+  body.style.overflow = 'visible';
 }
 
 // For register modal checking user input
