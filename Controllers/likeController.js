@@ -3,7 +3,7 @@ const likeModel = require('../Models/likeModel');
 
 // Uses media ID
 const get_likes_by_id = async (req, res) => {
-  console.log(`likeController: get_likes_by_id with path param`, req.params);
+  //console.log(`likeController: get_likes_by_id with path param`, req.params);
   const like = await likeModel.getLikesById(req.params.id);
   await res.json(like);
 };
@@ -53,7 +53,7 @@ const like_status = async (req, res) => {
     req.body.media_id = req.params.media_id;
     req.body.user_id = req.user.id;
     const status = await likeModel.likeStatus(req);
-    console.log('likeController: like_status', status);
+    //console.log('likeController: like_status', status);
 
 
     if (status == undefined) {

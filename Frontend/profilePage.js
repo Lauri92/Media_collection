@@ -141,6 +141,21 @@ const getComments = async (media_id) => {
   }
 };
 
+const getHashtags = async (media_id) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const hashtags = await fetch(url + '/hashtags/' + media_id,
+        options);
+    return await hashtags.json();
+  } catch (e) {
+    console.log(e.message);
+  }
+}
+
 // Checks if the user has liked the photo already
 const getLikeStatus = async (media_id) => {
   try {
@@ -247,7 +262,10 @@ addMediaForm.addEventListener('submit', async (e) => {
   console.log('json.pick_id', json.id);
   await getUserImagesCount();
   await getUserVideosCount();
-  addMediaForm.reset();
+  addMediaForm.reset()
+  document.querySelector('#fileinput-form-control').value = '';
+  document.querySelector('.to-be-uploaded-media').src = '';
+  addMediaModal.style.display = 'none';
 });
 
 // Open modal for changing profile picture
@@ -540,7 +558,8 @@ const createBigCard = async (media) => {
     }
 
     // Right side or bottom part in mobile view
-    // Media owner info and post date
+    // Media owner info and post date and hashtags
+    const hashtags = await getHashtags(media.id);
     const userInfoDiv = document.querySelector('.user-info');
     const mediaOwner = document.createElement('p');
     const mediaOwnerProfilePic = document.createElement('img');
@@ -548,7 +567,12 @@ const createBigCard = async (media) => {
         replace('Z', '').
         slice(0, -7);
 
-    mediaOwner.innerHTML = `${media.name} ${media.lastname} @ ${postdate}`;
+    // Add owner info and hastags
+    mediaOwner.innerHTML = `${media.name} ${media.lastname} @ ${postdate}<br>`;
+    for await (const tag of hashtags) {
+      mediaOwner.innerHTML += tag.tag + ' ';
+    }
+
     mediaOwnerProfilePic.src = `./Profilepics/${media.profile_picture}`;
     userInfoDiv.appendChild(mediaOwner);
     userInfoDiv.appendChild(mediaOwnerProfilePic);

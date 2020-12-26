@@ -10,7 +10,7 @@ const getCommentsByPicId = async (id) => {
         `SELECT DISTINCT users.name, users.lastname, users.profile_picture, comments.comment, comments.media_id, comments.date, comments.id AS commentid 
  FROM users INNER JOIN comments ON users.id = comments.user_id 
   WHERE comments.media_id = ?
-   ORDER BY comments.date DESC;`, [id]);
+   ORDER BY comments.date ASC;`, [id]);
     return rows;
   } catch (e) {
     console.error('commentModel getCommentById: ', e.message);

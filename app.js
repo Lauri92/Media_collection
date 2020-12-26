@@ -11,6 +11,7 @@ const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
 const noTokenLikeRoute = require('./Routes/noTokenLikeRoute');
 const commentRoute = require('./Routes/commentRoute');
+const hashtagRoute = require('./Routes/hashtagRoute');
 const app = express();
 
 
@@ -49,5 +50,6 @@ app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoute
 app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}),
     commentRoute);
+app.use('/hashtags', passport.authenticate('jwt', {session: false}), hashtagRoute)
 
 

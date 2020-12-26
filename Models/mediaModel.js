@@ -132,7 +132,7 @@ const getChosenMediaCountByOwner = async (req) => {
 };
 
 
-// Search all database descriptions and order by most liked
+// Search all database descriptions for matching input and order by most liked
 const getMediaBySearch = async (input) => {
   try {
     console.log('mediaModel getMediaBySearch: ', input);
@@ -188,7 +188,7 @@ const insertMedia = async (req) => {
   }
 };
 
-// Delete any media and associated likes and comments
+// Delete any media and associated likes and comments and hashtags
 const deleteMedia = async (media_id) => {
   console.log('mediaModel deleteMedia media_id: ', media_id);
   try {
@@ -198,7 +198,10 @@ const deleteMedia = async (media_id) => {
         'DELETE FROM comments WHERE media_id = ?', [media_id]);
     const [rows3] = await promisePool.execute(
         'DELETE FROM likes WHERE media_id = ?', [media_id]);
-    return 'deleted media and associated likes and comments';
+    const [rows4] = await promisePool.execute(
+        'DELETE FROM hashtags WHERE media_id = ?', [media_id]);
+
+    return 'deleted media and associated likes and comments and hashtag references';
   } catch (e) {
     console.error(e.message);
   }

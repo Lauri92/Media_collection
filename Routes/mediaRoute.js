@@ -1,5 +1,4 @@
 'use strict';
-//userRoute
 const express = require('express');
 const mediaController = require('../Controllers/mediaController');
 const {body} = require('express-validator');

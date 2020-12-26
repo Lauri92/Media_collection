@@ -36,7 +36,7 @@ passport.use(new JWTStrategy({
     async (jwtPayLoad, done) => {
 
       try {
-        console.log('util pass JWT', jwtPayLoad);
+        //console.log('util pass JWT', jwtPayLoad);
         if (jwtPayLoad === undefined) {
           return done(null, false, {message: 'Incorrect id.'});
         }

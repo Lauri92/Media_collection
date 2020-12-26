@@ -195,7 +195,7 @@ addMediaForm.addEventListener('submit', async (e) => {
   const response = await fetch(url + '/media', fetchOptions);
   const json = await response.json();
   console.log('add media response', json);
-  console.log('json.pick_id', json.id);
+  console.log('json.media_id', json.id);
 });
 
 // Search for media
@@ -265,6 +265,21 @@ const getComments = async (media_id) => {
     console.log(e.message);
   }
 };
+
+const getHashtags = async (media_id) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const hashtags = await fetch(url + '/hashtags/' + media_id,
+        options);
+    return await hashtags.json();
+  } catch (e) {
+    console.log(e.message);
+  }
+}
 
 // Checks if the user has liked the photo already
 const getLikeStatus = async (media_id) => {
@@ -512,7 +527,8 @@ const createBigCard = async (media) => {
     }
 
     // Right side or bottom part in mobile view
-    // Media owner info and post date
+    // Media owner info and post date and hashtags #
+    const hashtags = await getHashtags(media.id);
     const userInfoDiv = document.querySelector('.user-info');
     const mediaOwner = document.createElement('p');
     const mediaOwnerProfilePic = document.createElement('img');
@@ -520,7 +536,12 @@ const createBigCard = async (media) => {
         replace('Z', '').
         slice(0, -7);
 
-    mediaOwner.innerHTML = `${media.name} ${media.lastname} @ ${postdate}`;
+    mediaOwner.innerHTML = `${media.name} ${media.lastname} @ ${postdate}<br>`;
+
+    for await (const tag of hashtags) {
+      mediaOwner.innerHTML += tag.tag + ' ';
+    }
+
     mediaOwnerProfilePic.src = `./Profilepics/${media.profile_picture}`;
     userInfoDiv.appendChild(mediaOwner);
     userInfoDiv.appendChild(mediaOwnerProfilePic);
