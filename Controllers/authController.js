@@ -12,7 +12,7 @@ const login = (req, res) => {
     console.log('authController authenticate', user);
     if (err || !user) {
       return res.status(400).json({
-        message: 'Something is not right',
+        message: 'Incorrect credentials',
         user: user,
       });
     }

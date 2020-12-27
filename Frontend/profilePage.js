@@ -2,6 +2,15 @@
 const url = 'https://localhost:8000';
 const body = document.body;
 
+// Map items
+mapboxgl.accessToken = 'pk.eyJ1IjoicGV4aSIsImEiOiJja2hhN241bzYweXBtMnBuenA5Y3NxOGlmIn0.b1NkQwYNPY04r4MBe99rBQ';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/outdoors-v11', // stylesheet location
+  zoom: 9, // starting zoom
+});
+let marker;
+
 // Buttons
 const registerButton = document.querySelector('#register-button');
 const loginButton = document.querySelector('#login-button');
@@ -218,6 +227,12 @@ const getLoggedUser = async () => {
   } catch (e) {
     console.log(e.message);
   }
+};
+
+const addMarker = async (coords) => {
+  map.setCenter(coords);
+  map.setZoom(7);
+  marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
 };
 
 // All elements with class fa-times will get this eventlistener. (login, register, addMedia)
@@ -554,6 +569,11 @@ const createBigCard = async (media) => {
   try {
 
     // Left side of the big card or top part in mobile view
+    // Resize the map because it was opened in an initially hidden div and hide again
+    const modalMap = document.querySelector('#map');
+    map.resize();
+    modalMap.style.display = 'none';
+
     const bigCardMediaDiv = document.querySelector('.big-card-media');
     const bigCardImage = document.createElement('img');
     const bigCardVideo = document.createElement('video');
@@ -714,6 +734,36 @@ const createBigCard = async (media) => {
       }
     }
 
+    // Add option to toggle map if the image has coordinates attached
+    const locationButton = document.querySelector('.input-location');
+
+    if (media.coords !== null) {
+      try {
+        const coords = JSON.parse(media.coords);
+        await addMarker(coords);
+        locationButton.style.color = 'green';
+        locationButton.style.cursor = 'pointer';
+        locationButton.addEventListener('click', showLocation);
+      } catch (e) {
+      }
+    }
+
+    async function showLocation() {
+      modalMap.style.display = 'flex';
+      bigCardImage.style.display = 'none';
+      bigCardVideo.style.display = 'none';
+      locationButton.removeEventListener('click', showLocation);
+      locationButton.addEventListener('click', showImage);
+    }
+
+    async function showImage() {
+      modalMap.style.display = 'none';
+      bigCardImage.style.display = 'flex';
+      bigCardVideo.style.display = 'flex';
+      locationButton.addEventListener('click', showLocation);
+      locationButton.removeEventListener('click', showImage);
+    }
+
     // Select commentForm to add eventlistener to post a comment
     const commentForm = document.querySelector('.post-comment-form');
 
@@ -869,7 +919,10 @@ const createBigCard = async (media) => {
     async function clearBigCard() {
       bigCardModal.style.display = 'none';
 
-      bigCardMediaDiv.innerHTML = '';
+      bigCardImage.remove();
+      bigCardVideo.remove();
+      modalMap.style.display = 'flex';
+      marker.remove();
       userInfoDiv.innerHTML = '';
       description.innerHTML = '';
       bigCardComments.innerHTML = '';
@@ -877,9 +930,13 @@ const createBigCard = async (media) => {
       allComments.innerHTML = '';
 
       heart.style.color = '#8f8b8b';
+      locationButton.style.color = '#8f8b8b';
 
       //Remove event listener from like button (heart)
       heart.removeEventListener('click', likeMedia);
+
+      //Remove event listener from location button
+      locationButton.removeEventListener('click', showLocation);
 
       // Remove event listener from the form to not stack event listeners on top of same form
       commentForm.removeEventListener('submit', postComment);

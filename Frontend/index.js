@@ -2,6 +2,15 @@
 const url = 'https://localhost:8000';
 const body = document.body;
 
+// Map items
+mapboxgl.accessToken = 'pk.eyJ1IjoicGV4aSIsImEiOiJja2hhN241bzYweXBtMnBuenA5Y3NxOGlmIn0.b1NkQwYNPY04r4MBe99rBQ';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/outdoors-v11', // stylesheet location
+  zoom: 9, // starting zoom
+});
+let marker;
+
 // Buttons
 const registerButton = document.querySelector('#register-button');
 const loginButton = document.querySelector('#login-button');
@@ -24,7 +33,7 @@ const registerForm = document.querySelector('#register-form');
 const addMediaForm = document.querySelector('#add-media-form');
 const searchForm = document.querySelector('#search-form');
 
-// Search bar buttons control
+// Search bar control buttons
 const searchMedias = document.querySelector('.photo-video-button');
 const searchUsers = document.querySelector('.users-button');
 const searchTags = document.querySelector('.hashtags-button');
@@ -102,6 +111,9 @@ logoutButton.addEventListener('click', async (e) => {
     logoutButton.style.display = 'none';
     addMediaButton.style.display = 'none';
     profileButton.style.display = 'none';
+    document.querySelector('#profile-button img').remove();
+    document.querySelector('.cards').innerHTML = '';
+
     //window.location.href="profilePage.html"
 
   } catch (e) {
@@ -219,7 +231,8 @@ searchForm.addEventListener('submit', async (e) => {
       'Content-Type': 'application/json',
     },
   };
-  const response = await fetch(url + '/media/search/' + searchFor + '/' + document.querySelector('#search-form input').value,
+  const response = await fetch(url + '/media/search/' + searchFor + '/' +
+      document.querySelector('#search-form input').value,
       fetchOptions);
   const json = await response.json();
   console.log('/media/search/' + searchFor + '/', json);
@@ -230,8 +243,8 @@ searchForm.addEventListener('submit', async (e) => {
 searchMedias.addEventListener('click', async (e) => {
   e.preventDefault();
   searchMedias.style.border = '5px solid #2c860c';
-  searchTags.style.border = 'none';
-  searchUsers.style.border = 'none';
+  searchTags.style.border = '5px solid #f1f1f1';
+  searchUsers.style.border = '5px solid #f1f1f1';
   document.querySelector(
       '#search-form input').placeholder = 'Search for images and videos...';
   searchFor = 'descriptions';
@@ -240,9 +253,9 @@ searchMedias.addEventListener('click', async (e) => {
 // Change search content to tags of images
 searchTags.addEventListener('click', async (e) => {
   e.preventDefault();
-  searchMedias.style.border = 'none';
+  searchMedias.style.border = '5px solid #f1f1f1';
   searchTags.style.border = '5px solid #2c860c';
-  searchUsers.style.border = 'none';
+  searchUsers.style.border = '5px solid #f1f1f1';
   document.querySelector('#search-form input').placeholder = 'Search by tag...';
   searchFor = 'tags';
 });
@@ -250,8 +263,8 @@ searchTags.addEventListener('click', async (e) => {
 // Change search content to users
 searchUsers.addEventListener('click', async (e) => {
   e.preventDefault();
-  searchMedias.style.border = 'none';
-  searchTags.style.border = 'none';
+  searchMedias.style.border = '5px solid #f1f1f1';
+  searchTags.style.border = '5px solid #f1f1f1';
   searchUsers.style.border = '5px solid #2c860c';
   document.querySelector(
       '#search-form input').placeholder = 'Search for users...';
@@ -364,6 +377,12 @@ const getLoggedUser = async () => {
   } catch (e) {
     console.log(e.message);
   }
+};
+
+const addMarker = async (coords) => {
+  map.setCenter(coords);
+  map.setZoom(7);
+  marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
 };
 
 /**
@@ -557,6 +576,11 @@ const createBigCard = async (media) => {
   try {
 
     // Left side of the big card or top part in mobile view
+    // Resize the map because it was opened in an initially hidden div and hide again
+    const modalMap = document.querySelector('#map');
+    map.resize();
+    modalMap.style.display = 'none';
+
     const bigCardMediaDiv = document.querySelector('.big-card-media');
     const bigCardImage = document.createElement('img');
     const bigCardVideo = document.createElement('video');
@@ -719,6 +743,36 @@ const createBigCard = async (media) => {
       }
     }
 
+    // Add option to toggle map if the image has coordinates attached
+    const locationButton = document.querySelector('.input-location');
+
+    if (media.coords !== null) {
+      try {
+        const coords = JSON.parse(media.coords);
+        await addMarker(coords);
+        locationButton.style.color = 'green';
+        locationButton.style.cursor = 'pointer';
+        locationButton.addEventListener('click', showLocation);
+      } catch (e) {
+      }
+    }
+
+    async function showLocation() {
+      modalMap.style.display = 'flex';
+      bigCardImage.style.display = 'none';
+      bigCardVideo.style.display = 'none';
+      locationButton.removeEventListener('click', showLocation);
+      locationButton.addEventListener('click', showImage);
+    }
+
+    async function showImage() {
+      modalMap.style.display = 'none';
+      bigCardImage.style.display = 'flex';
+      bigCardVideo.style.display = 'flex';
+      locationButton.addEventListener('click', showLocation);
+      locationButton.removeEventListener('click', showImage);
+    }
+
     // Select commentForm to add eventlistener to post a comment
     const commentForm = document.querySelector('.post-comment-form');
 
@@ -809,7 +863,10 @@ const createBigCard = async (media) => {
     async function clearBigCard() {
       bigCardModal.style.display = 'none';
 
-      bigCardMediaDiv.innerHTML = '';
+      bigCardImage.remove();
+      bigCardVideo.remove();
+      modalMap.style.display = 'flex';
+      marker.remove();
       userInfoDiv.innerHTML = '';
       description.innerHTML = '';
       bigCardComments.innerHTML = '';
@@ -817,9 +874,13 @@ const createBigCard = async (media) => {
       allComments.innerHTML = '';
 
       heart.style.color = '#8f8b8b';
+      locationButton.style.color = '#8f8b8b';
 
       //Remove event listener from like button (heart)
       heart.removeEventListener('click', likeMedia);
+
+      //Remove event listener from location button
+      locationButton.removeEventListener('click', showLocation);
 
       // Remove event listener from the form to not stack event listeners on top of same form
       commentForm.removeEventListener('submit', postComment);
