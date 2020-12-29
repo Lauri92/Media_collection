@@ -14,7 +14,6 @@ const commentRoute = require('./Routes/commentRoute');
 const hashtagRoute = require('./Routes/hashtagRoute');
 const app = express();
 
-
 app.use(cors());
 
 app.use(express.json());
@@ -41,15 +40,14 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use('/', rootRoute);
 app.use('/auth', authRoute);
-app.use('/notokenpic', mediaRoute);
 app.use('/notokenlikes', noTokenLikeRoute);
 app.use('/notokencomments', commentRoute);
-app.use('/media', passport.authenticate('jwt', {session: false}), mediaRoute);
+app.use('/media', mediaRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
-app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoute);
-app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
-app.use('/comments', passport.authenticate('jwt', {session: false}),
-    commentRoute);
-app.use('/hashtags', passport.authenticate('jwt', {session: false}), hashtagRoute)
+app.use('/profile', passport.authenticate('jwt', {session: false}),
+    profileRoute);
+app.use('/likes', likeRoute);
+app.use('/comments', commentRoute);
+app.use('/hashtags', hashtagRoute);
 
 

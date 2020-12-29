@@ -697,17 +697,22 @@ const createBigCard = async (media) => {
       console.log(e.message);
     }
 
-    // Check if the currently logged in user has already liked this piece of media
-    const hasLiked = await getLikeStatus(media.id);
     const heart = document.querySelector('.fa-heart');
 
-    if (hasLiked.result === true) {
-      //User has already liked this media
-      console.log('You have liked already.');
-      heart.style.color = '#B00923';
+    // Check if the currently logged in user has already liked this piece of media
+    if (isToken) {
+      const hasLiked = await getLikeStatus(media.id);
+
+      if (hasLiked.result === true) {
+        //User has already liked this media
+        console.log('You have liked already.');
+        heart.style.color = '#B00923';
+      } else {
+        heart.addEventListener('click', likeMedia);
+        heart.style.cursor = 'pointer';
+      }
     } else {
-      heart.addEventListener('click', likeMedia);
-      heart.style.cursor = 'pointer';
+      heart.addEventListener('click', loginPromptToLike);
     }
 
     // When user presses heart, and hasn't liked before
@@ -743,6 +748,11 @@ const createBigCard = async (media) => {
       }
     }
 
+    async function loginPromptToLike() {
+      // TODO: Add pop up
+      console.log('Login to like!');
+    }
+
     // Add option to toggle map if the image has coordinates attached
     const locationButton = document.querySelector('.input-location');
 
@@ -776,7 +786,13 @@ const createBigCard = async (media) => {
     // Select commentForm to add eventlistener to post a comment
     const commentForm = document.querySelector('.post-comment-form');
 
-    commentForm.addEventListener('submit', postComment);
+    if (isToken) {
+      // User is logged in
+      commentForm.addEventListener('submit', postComment);
+    } else {
+      // User isn't logged in
+      commentForm.addEventListener('submit', loginPromptToComment)
+    }
 
     async function postComment(e) {
       e.preventDefault();
@@ -850,6 +866,12 @@ const createBigCard = async (media) => {
       }
     }
 
+    async function loginPromptToComment(e) {
+      e.preventDefault();
+      document.querySelector('.post-comment-textarea').value = '';
+      console.log('Log in to comment!');
+    }
+
     // Close big card and clear it by using innerHTML
     bigCardCloseButton.addEventListener('click', async (e) => {
       await clearBigCard();
@@ -880,12 +902,14 @@ const createBigCard = async (media) => {
 
       //Remove event listener from like button (heart)
       heart.removeEventListener('click', likeMedia);
+      heart.removeEventListener('click', loginPromptToLike)
 
       //Remove event listener from location button
       locationButton.removeEventListener('click', showLocation);
 
       // Remove event listener from the form to not stack event listeners on top of same form
       commentForm.removeEventListener('submit', postComment);
+      commentForm.removeEventListener('submit', loginPromptToComment);
 
       // Allow scrolling again
       body.style.overflow = 'visible';
@@ -904,4 +928,5 @@ if (isToken) {
   getAllMedia();
 } else {
   console.log('No token, log in plz');
+  getAllMedia();
 }
