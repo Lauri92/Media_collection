@@ -56,7 +56,7 @@ router.delete('/delete/:media_id', mediaController.media_delete);
 // Upload media
 router.route('/')
     .post(
-        upload.single('pic'),
+        upload.single('media'),
         mediaController.make_thumbnail,
         injectFile,
         [

@@ -1,15 +1,15 @@
 /* CSS for the big opening card */
 
 /* Scroll bar adjustments*/
-.comments::-webkit-scrollbar, .description::-webkit-scrollbar {
+.comments::-webkit-scrollbar, .description::-webkit-scrollbar, .post-comment-textarea::-webkit-scrollbar {
     width: 0.50rem;
 }
 
-.comments::-webkit-scrollbar-track, .description::-webkit-scrollbar {
+.comments::-webkit-scrollbar-track, .description::-webkit-scrollbar, .post-comment-textarea::-webkit-scrollbar {
     background: transparent;
 }
 
-.comments::-webkit-scrollbar-thumb, .description::-webkit-scrollbar {
+.comments::-webkit-scrollbar-thumb, .description::-webkit-scrollbar, .post-comment-textarea::-webkit-scrollbar {
     background: #e3e7de;
     border-radius: 10px;
 }
@@ -42,7 +42,7 @@
     padding: 20px;
 
     background-color: rgb(0, 0, 0); /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
 }
 
 .boxcontainer {
@@ -248,6 +248,7 @@
 .big-card-info .post-comment-textarea {
     height: 40px;
     width: 90%;
+    resize: none;
 }
 
 .big-card-info .post-comment-button {

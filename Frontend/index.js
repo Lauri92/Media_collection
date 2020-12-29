@@ -866,7 +866,9 @@ const createBigCard = async (media) => {
       bigCardImage.remove();
       bigCardVideo.remove();
       modalMap.style.display = 'flex';
-      marker.remove();
+      if (marker !== undefined) {
+        marker.remove();
+      }
       userInfoDiv.innerHTML = '';
       description.innerHTML = '';
       bigCardComments.innerHTML = '';

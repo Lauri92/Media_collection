@@ -19,6 +19,10 @@
 </head>
 <body>
 
+<!-- The video -->
+<video autoplay muted loop id="backgroundVideo">
+    <source src="grass.mp4" type="video/mp4">
+</video>
 
 <!-- Top navbar-->
 <nav class="navbar">
@@ -158,7 +162,7 @@
             </div>
             <div class="form-control" id="fileinput-form-control">
                 <label>Choose a file, image or video<br>Max 50Mb</label>
-                <input class="img-input" type="file" name="pic" accept="image/*, video/*" placeholder="Choose file">
+                <input class="img-input" type="file" name="media" accept="image/*, video/*" placeholder="Choose file">
                 <img class="to-be-uploaded-media" alt="No Images Chosen">
             </div>
             <button type="submit">Publish</button>
@@ -235,6 +239,13 @@
                 </svg>
             </p>
         </div>
+    </div>
+</div>
+
+<!-- Upload progress bar -->
+<div class="progress-bar" id="progress-bar">
+    <div class="progress-bar-fill">
+        <span class="progress-bar-text">0%</span>
     </div>
 </div>
 

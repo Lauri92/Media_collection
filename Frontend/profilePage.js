@@ -42,6 +42,8 @@ const changeProfilePicForm = document.querySelector('#change-profile-pic-form');
 // Misc
 const imgInput = document.querySelector('.img-input');
 const profilePicInput = document.querySelector('.profile-pic-input');
+// Keep track of AJAX call if true -> AJAX call still happening, don't allow new one
+let isLoading = false;
 
 // Get images of logged in user
 const getUserImages = async () => {
@@ -51,11 +53,17 @@ const getUserImages = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/media/specifiedusermedia/image',
-        options);
-    const media = await response.json();
-    console.log(media);
-    await createMediaCards(media);
+    if (isLoading === false) {
+      isLoading = true;
+      const response = await fetch(url + '/media/specifiedusermedia/image',
+          options);
+      const media = await response.json();
+      console.log(media);
+      await createMediaCards(media);
+      isLoading = false;
+    } else {
+      console.log('Another request processing.');
+    }
   } catch (e) {
     console.log(e.message);
   }
@@ -89,11 +97,17 @@ const getUserVideos = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/media/specifiedusermedia/video',
-        options);
-    const media = await response.json();
-    console.log(media);
-    await createMediaCards(media);
+    if (isLoading === false) {
+      isLoading = true;
+      const response = await fetch(url + '/media/specifiedusermedia/video',
+          options);
+      const media = await response.json();
+      console.log(media);
+      await createMediaCards(media);
+      isLoading = false;
+    } else {
+      console.log('Another request processing.');
+    }
   } catch (e) {
     console.log(e.message);
   }
@@ -163,7 +177,7 @@ const getHashtags = async (media_id) => {
   } catch (e) {
     console.log(e.message);
   }
-}
+};
 
 // Checks if the user has liked the photo already
 const getLikeStatus = async (media_id) => {
@@ -278,7 +292,7 @@ addMediaForm.addEventListener('submit', async (e) => {
   console.log('json.pick_id', json.id);
   await getUserImagesCount();
   await getUserVideosCount();
-  addMediaForm.reset()
+  addMediaForm.reset();
   document.querySelector('#fileinput-form-control').value = '';
   document.querySelector('.to-be-uploaded-media').src = '';
   addMediaModal.style.display = 'none';
@@ -922,7 +936,9 @@ const createBigCard = async (media) => {
       bigCardImage.remove();
       bigCardVideo.remove();
       modalMap.style.display = 'flex';
-      marker.remove();
+      if (marker !== undefined) {
+        marker.remove();
+      }
       userInfoDiv.innerHTML = '';
       description.innerHTML = '';
       bigCardComments.innerHTML = '';
