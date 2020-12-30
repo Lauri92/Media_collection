@@ -2,6 +2,17 @@
 const pool = require('../Database/db');
 const promisePool = pool.promise();
 
+// Get all media count
+const getMediaCount = async () => {
+  try {
+    const [rows] = await promisePool.execute(
+        'SELECT COUNT(*) total_media_count FROM medias;');
+    return rows[0];
+  } catch (e) {
+    console.error('mediaModel getAllMedia: ', e.message);
+  }
+}
+
 // Get all media by their posting date
 const getAllMedia = async () => {
   try {
@@ -10,6 +21,44 @@ const getAllMedia = async () => {
         'FROM users\n' +
         'INNER JOIN medias ON users.id = medias.user_id\n' +
         'ORDER BY medias.post_date DESC;');
+    return rows;
+  } catch (e) {
+    console.error('mediaModel getAllMedia: ', e.message);
+  }
+};
+
+// Get all media by their posting date
+const getScrollMedia = async (req) => {
+  try {
+    const [rows] = await promisePool.execute(
+        'SELECT users.name, users.lastname, medias.description, medias.coords, medias.date, medias.post_date, medias.filename, medias.id, medias.user_id, medias.mediatype, users.profile_picture\n' +
+        ' FROM users\n' +
+        '  INNER JOIN medias ON users.id = medias.user_id\n' +
+        '   ORDER BY medias.post_date DESC\n' +
+        '    LIMIT ?, ?;',[
+          req.body.limit1,
+          req.body.limit2
+          ]);
+    return rows;
+  } catch (e) {
+    console.error('mediaModel getAllMedia: ', e.message);
+  }
+};
+
+// Get all media by their posting date
+const getScrollMediaLikes = async (req) => {
+  try {
+    const [rows] = await promisePool.execute(
+        'SELECT IFNULL(SUM(likes.likes), 0) likes, medias.id, medias.description, medias.filename, medias.coords, medias.date, medias.post_date, users.name, users.lastname, medias.mediatype, users.profile_picture\n' +
+        'FROM medias\n' +
+        ' LEFT JOIN likes ON medias.id = likes.media_id\n' +
+        '  LEFT JOIN users ON medias.user_id = users.id\n' +
+        '   group by medias.id\n' +
+        '    ORDER BY LIKES DESC\n' +
+        '     LIMIT ?, ?;',[
+          req.body.limit1,
+          req.body.limit2
+        ]);
     return rows;
   } catch (e) {
     console.error('mediaModel getAllMedia: ', e.message);
@@ -241,6 +290,9 @@ module.exports = {
   getAllMedia,
   getChosenMediaCountByOwner,
   getMediaBySearchTags,
+  getScrollMedia,
+  getScrollMediaLikes,
+  getMediaCount
 };
 
 

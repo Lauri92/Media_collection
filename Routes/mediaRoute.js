@@ -21,8 +21,17 @@ const injectFile = (req, res, next) => {
   next();
 };
 
+// Get all media count
+router.get('/count', mediaController.media_count_get);
+
 // Get all media
 router.get('/media', mediaController.media_list_get);
+
+// Get scrolling media recent -> rows of 6
+router.get('/scroll/:limit1/:limit2', mediaController.media_scroll_list_get);
+
+// Get scrolling media likes -> rows of 6
+router.get('/scrolllikes/:limit1/:limit2', mediaController.media_scroll_list_get_likes);
 
 // Get all images
 router.get('/pics', mediaController.pic_list_get);

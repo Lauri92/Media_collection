@@ -7,11 +7,36 @@ const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 const fs = require('fs');
 
+// Get all media count
+const media_count_get = async (req, res) => {
+  const mediaCount = await mediaModel.getMediaCount();
+  await res.json(mediaCount);
+}
+
+
 // Get all media
 const media_list_get = async (req, res) => {
   const media = await mediaModel.getAllMedia();
   await res.json(media);
 };
+
+// Get scrolling media by most recent
+const media_scroll_list_get = async (req, res) => {
+  console.log(req.params);
+  req.body.limit1 = req.params.limit1
+  req.body.limit2 = req.params.limit2
+  const media = await mediaModel.getScrollMedia(req);
+  await res.json(media);
+}
+
+// Get scrolling media by most likes
+const media_scroll_list_get_likes = async (req, res) => {
+  console.log(req.params);
+  req.body.limit1 = req.params.limit1
+  req.body.limit2 = req.params.limit2
+  const media = await mediaModel.getScrollMediaLikes(req);
+  await res.json(media);
+}
 
 // get all images
 const pic_list_get = async (req, res) => {
@@ -287,4 +312,7 @@ module.exports = {
   chosen_media_get_by_owner,
   media_list_get,
   chosen_media_count_get_by_owner,
+  media_scroll_list_get,
+  media_scroll_list_get_likes,
+  media_count_get
 };

@@ -48,12 +48,12 @@
     <div class="search-div">
         <h1>Explore...</h1>
         <div class="search-options-container">
-            <h2 class="search-options" id="search-most-liked">Most liked</h2>
             <h2 class="search-options" id="search-most-recent">Most recent</h2>
+            <h2 class="search-options" id="search-most-liked">Most liked</h2>
         </div>
         <h1>Or...</h1>
         <form id="search-form">
-            <input type="text" placeholder="Search media, users, tags.." name="search" pattern=".{3,}">
+            <input type="text" placeholder="Search by descriptions..." name="search" pattern=".{3,}">
             <div class="buttons">
                 <button type=button class="option-button photo-video-button"><i class="fas fa-photo-video"></i></button>
                 <button type=button class="option-button users-button"><i class="fas fa-users"></i></button>
@@ -68,6 +68,13 @@
         <div class="cards">
             <!-- Small cards go here -->
         </div>
+    </div>
+
+
+    <div class="loading">
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
     </div>
 </main>
 

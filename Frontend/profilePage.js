@@ -540,6 +540,7 @@ const createSmallCards = async (media) => {
         console.log('Delete response: ', json);
         body.style.overflow = 'visible';
         deleteMediaModal.style.display = 'none';
+        await leaveDeleteModal();
         if (media.mediatype === 'image') {
           await getUserImages();
         } else {
