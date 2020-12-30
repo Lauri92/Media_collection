@@ -20,6 +20,8 @@ const addMediaButton = document.querySelector('#add-media-button');
 const closeButtons = document.getElementsByClassName('fa-times');
 const bigCardCloseButton = document.querySelector('.close-button');
 const bigCardMobileCloseButton = document.querySelector('.mobile-close-button');
+const searchMostRecent = document.querySelector('#search-most-recent');
+const searchMostLiked = document.querySelector('#search-most-liked');
 
 //Modals
 const loginModal = document.querySelector('#login-modal');
@@ -39,8 +41,11 @@ const searchUsers = document.querySelector('.users-button');
 const searchTags = document.querySelector('.hashtags-button');
 let searchFor = 'descriptions';
 
+// Misc
 // Control the thumbnail image for uploads
 const imgInput = document.querySelector('.img-input');
+// Keep track of AJAX call if true -> AJAX call still happening, don't allow new one
+let isLoading = false;
 
 /**
  * Function to create media cards on the page
@@ -105,6 +110,7 @@ logoutButton.addEventListener('click', async (e) => {
     // TODO: Add prettier log out
     alert('You have logged out');
 
+    location.reload();
     // Show login and registration buttons again
     registerButton.style.display = 'block';
     loginButton.style.display = 'block';
@@ -149,15 +155,14 @@ loginForm.addEventListener('submit', async (e) => {
     console.log('login response', json);
 
     if (!json.user) {
+      // Wrong credentials
       //TODO: Implement better looking response
       alert(json.message);
     } else {
       //Set token
       sessionStorage.setItem('token', json.token);
       console.log('token: ', sessionStorage.getItem('token'));
-      await getLoggedUser();
-      await setUserAslogged();
-      await getAllMedia();
+      location.reload();
     }
   } catch (e) {
     console.log(e.message);
@@ -222,7 +227,33 @@ addMediaForm.addEventListener('submit', async (e) => {
   body.style.overflow = 'visible';
 });
 
-// Search for media
+// Search for most recent media
+searchMostRecent.addEventListener('click', async (e) => {
+  await getAllMedia();
+});
+
+// Search for most liked media
+searchMostLiked.addEventListener('click', async (e) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    if (isLoading === false) {
+      isLoading = true;
+      const response = await fetch(url + '/media/mostlikes', options);
+      const media = await response.json();
+      console.log(media);
+      await createMediaCards(media);
+      isLoading = false;
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+});
+
+// Search for media by input
 searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const fetchOptions = {
@@ -274,7 +305,7 @@ searchUsers.addEventListener('click', async (e) => {
 /**
  * Functions containing a request to server
  */
-// Get all media stored by all users. Token is required to request for this information.
+// Get all media stored by all users by most recent, default search to populate card container
 const getAllMedia = async () => {
   try {
     const options = {
@@ -282,9 +313,13 @@ const getAllMedia = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/media/media', options);
-    const media = await response.json();
-    await createMediaCards(media);
+    if (isLoading === false) {
+      isLoading = true;
+      const response = await fetch(url + '/media/media', options);
+      const media = await response.json();
+      await createMediaCards(media);
+      isLoading = false;
+    }
   } catch (e) {
     console.log(e.message);
   }
@@ -698,6 +733,7 @@ const createBigCard = async (media) => {
     }
 
     const heart = document.querySelector('.fa-heart');
+    const likePopup = document.getElementById('likePopup');
 
     // Check if the currently logged in user has already liked this piece of media
     if (isToken) {
@@ -749,8 +785,7 @@ const createBigCard = async (media) => {
     }
 
     async function loginPromptToLike() {
-      // TODO: Add pop up
-      console.log('Login to like!');
+      likePopup.classList.toggle('show');
     }
 
     // Add option to toggle map if the image has coordinates attached
@@ -785,13 +820,14 @@ const createBigCard = async (media) => {
 
     // Select commentForm to add eventlistener to post a comment
     const commentForm = document.querySelector('.post-comment-form');
+    const commentPopup = document.getElementById('commentPopup');
 
     if (isToken) {
       // User is logged in
       commentForm.addEventListener('submit', postComment);
     } else {
       // User isn't logged in
-      commentForm.addEventListener('submit', loginPromptToComment)
+      commentForm.addEventListener('submit', loginPromptToComment);
     }
 
     async function postComment(e) {
@@ -869,7 +905,7 @@ const createBigCard = async (media) => {
     async function loginPromptToComment(e) {
       e.preventDefault();
       document.querySelector('.post-comment-textarea').value = '';
-      console.log('Log in to comment!');
+      commentPopup.classList.toggle('show');
     }
 
     // Close big card and clear it by using innerHTML
@@ -902,7 +938,7 @@ const createBigCard = async (media) => {
 
       //Remove event listener from like button (heart)
       heart.removeEventListener('click', likeMedia);
-      heart.removeEventListener('click', loginPromptToLike)
+      heart.removeEventListener('click', loginPromptToLike);
 
       //Remove event listener from location button
       locationButton.removeEventListener('click', showLocation);

@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/2d155bb92d.js" crossorigin="anonymous"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js' defer></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet'/>
 
 </head>
 <body>
@@ -47,6 +47,11 @@
     <!-- Search form -->
     <div class="search-div">
         <h1>Explore...</h1>
+        <div class="search-options-container">
+            <h2 class="search-options" id="search-most-liked">Most liked</h2>
+            <h2 class="search-options" id="search-most-recent">Most recent</h2>
+        </div>
+        <h1>Or...</h1>
         <form id="search-form">
             <input type="text" placeholder="Search media, users, tags.." name="search" pattern=".{3,}">
             <div class="buttons">
@@ -57,11 +62,6 @@
             </div>
         </form>
     </div>
-
-    <!-- Tooltip
-    <div class="tooltip">Hover over me
-        <span class="tooltiptext">Tooltip text</span>
-    </div>-->
 
 
     <div class="container">
@@ -211,6 +211,7 @@
                     </div>-->
                 </div>
                 <div class="interactions">
+                    <span class="popuptext" id="likePopup">Login to like!</span>
                     <p class="input-likes"><span id="big-card-likes"></span>
                         <i class="fas fa-heart"></i>
                     </p>
@@ -222,6 +223,7 @@
                     </p>
                 </div>
                 <div class="post-comment-section">
+                    <span class="popuptext" id="commentPopup">Login to comment!</span>
                     <form class="post-comment-form">
                         <textarea type="text" class="post-comment-textarea" name="comment" pattern=".{3,}"
                                   placeholder="Write your comment about this photo here" required></textarea>

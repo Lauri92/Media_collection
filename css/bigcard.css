@@ -256,6 +256,89 @@
     height: 40px;
 }
 
+/* Popup for likes if user hasn't logged in */
+.interactions .popuptext{
+    display: none;
+    width: 100px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 8px 8px 8px;
+    position: absolute;
+    z-index: 9999;
+    left: 1%;
+    bottom: 21%;
+}
+
+.interactions .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 65%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.interactions .show {
+    display: flex;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s
+}
+
+/* Popup for comments if user hasn't logged in */
+.post-comment-section .popuptext{
+    display: none;
+    width: 100px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 8px 8px 8px;
+    position: absolute;
+    z-index: 9999;
+    left: 10%;
+    bottom: 10%;
+}
+
+.post-comment-section .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 65%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.post-comment-section .show {
+    display: flex;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s
+}
+
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
 @media only screen and (max-width: 550px) {
     .left-arrow {
