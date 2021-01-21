@@ -11,8 +11,7 @@ const fs = require('fs');
 const media_count_get = async (req, res) => {
   const mediaCount = await mediaModel.getMediaCount();
   await res.json(mediaCount);
-}
-
+};
 
 // Get all media
 const media_list_get = async (req, res) => {
@@ -23,20 +22,29 @@ const media_list_get = async (req, res) => {
 // Get scrolling media by most recent
 const media_scroll_list_get = async (req, res) => {
   console.log(req.params);
-  req.body.limit1 = req.params.limit1
-  req.body.limit2 = req.params.limit2
-  const media = await mediaModel.getScrollMedia(req);
-  await res.json(media);
-}
+  req.body.limit1 = req.params.limit1;
+  req.body.limit2 = req.params.limit2;
+  const medias = await mediaModel.getScrollMedia(req);
+
+  const mediaIndexes = medias.map((media) => {
+    return media.id;
+  });
+  for (const [index, media] of medias.entries()) {
+    media.nextId = mediaIndexes[index + 1];
+    media.previousId = mediaIndexes[index - 1];
+  }
+
+  await res.json(medias);
+};
 
 // Get scrolling media by most likes
 const media_scroll_list_get_likes = async (req, res) => {
   console.log(req.params);
-  req.body.limit1 = req.params.limit1
-  req.body.limit2 = req.params.limit2
+  req.body.limit1 = req.params.limit1;
+  req.body.limit2 = req.params.limit2;
   const media = await mediaModel.getScrollMediaLikes(req);
   await res.json(media);
-}
+};
 
 // get all images
 const pic_list_get = async (req, res) => {
@@ -314,5 +322,5 @@ module.exports = {
   chosen_media_count_get_by_owner,
   media_scroll_list_get,
   media_scroll_list_get_likes,
-  media_count_get
+  media_count_get,
 };

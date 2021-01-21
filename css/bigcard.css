@@ -114,6 +114,7 @@
     margin-right: 4px;
     text-decoration: none;
     opacity: 0.5;
+    font-size: 4em;
 }
 
 .left-arrow:hover {
@@ -129,6 +130,7 @@
     margin-left: 4px;
     text-decoration: none;
     opacity: 0.5;
+    font-size: 4em;
 }
 
 .right-arrow:hover {

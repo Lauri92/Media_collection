@@ -42,7 +42,7 @@ body::-webkit-scrollbar-thumb {
     border-radius: 10px;
 }
 
-/* Background video */
+/* Background video
 #backgroundVideo {
     object-fit: cover;
     width: 100vw;
@@ -51,7 +51,7 @@ body::-webkit-scrollbar-thumb {
     top: 0;
     left: 0;
 }
-
+/*
 /* Top Nav bar */
 .navbar {
     height: 70px;

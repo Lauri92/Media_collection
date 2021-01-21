@@ -68,7 +68,7 @@ window.addEventListener('scroll', () => {
   //console.log( { scrollTop, scrollHeight, clientHeight });
 
   if (clientHeight + scrollTop >= scrollHeight - 5) {
-    // show the loading animation
+    // show the loading animation and fetch more photos
     showLoading();
   } else {
     loading.classList.remove('show');
@@ -529,6 +529,7 @@ getTotalMediaCount();
     }
   };
 
+  // Check who is logged in
   const getLoggedUser = async () => {
     try {
       const options = {
@@ -541,7 +542,6 @@ getTotalMediaCount();
       const response = await fetch(url + '/user/check/userlogged',
           options);
       const userInfo = await response.json();
-      console.log(userInfo);
 
       // Set profile picture in nav bar
       const profileImg = document.createElement('img');
@@ -553,6 +553,7 @@ getTotalMediaCount();
     }
   };
 
+  // Add marker to map
   const addMarker = async (coords) => {
     map.setCenter(coords);
     map.setZoom(7);
@@ -713,10 +714,10 @@ getTotalMediaCount();
       }
       const comments = await getComments(media.id);
       if (comments.length < 1) {
-        // No likes
+        // No comments
         smallCardP.innerHTML += `<br>Comments: 0`;
       } else {
-        // Has likes
+        // Has comments
         smallCardP.innerHTML += `<br>Comments: ${comments.length}`;
       }
 
@@ -1100,8 +1101,9 @@ getTotalMediaCount();
   if (isToken) {
     getLoggedUser();
     setUserAslogged();
-    getSomeMedia();
   } else {
     console.log('No token, log in plz');
     //getAllMedia();
   }
+
+getSomeMedia();
