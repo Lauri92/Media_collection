@@ -5,7 +5,32 @@ const hashtagModel = require('../Models/hashtagModel');
 const {validationResult} = require('express-validator');
 const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
+const FileType = require('file-type');
 const fs = require('fs');
+const aws = require('aws-sdk');
+const uuid = require('uuid').v4;
+require('dotenv').config();
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
+const s3 = new aws.S3({apiVersion: '2006-03-01'});
+
+// Get image from S3
+const getImage = async (key) => {
+  return s3.getObject(
+      {
+        Bucket: process.env.AWS_BUCKET,
+        Key: key,
+      },
+  ).promise();
+};
+
+// Encode the data to base64
+const encode = async (data) => {
+  let buf = Buffer.from(data);
+  return buf.toString('base64');
+};
 
 // Get all media count
 const media_count_get = async (req, res) => {
@@ -25,13 +50,21 @@ const media_scroll_list_get = async (req, res) => {
   req.body.limit1 = req.params.limit1;
   req.body.limit2 = req.params.limit2;
   const medias = await mediaModel.getScrollMedia(req);
+  /*
+    const mediaIndexes = medias.map((media) => {
+      return media.id;
+    });
+    for (const [index, media] of medias.entries()) {
+      media.nextId = mediaIndexes[index + 1];
+      media.previousId = mediaIndexes[index - 1];
+    }
+  */
 
-  const mediaIndexes = medias.map((media) => {
-    return media.id;
-  });
-  for (const [index, media] of medias.entries()) {
-    media.nextId = mediaIndexes[index + 1];
-    media.previousId = mediaIndexes[index - 1];
+  for (const media of medias) {
+    const data = await getImage(media.filename);
+    const profilePicData = await getImage(media.profile_picture);
+    media.filename = await encode(data.Body);
+    media.profile_picture = await encode(profilePicData.Body);
   }
 
   await res.json(medias);
@@ -42,8 +75,16 @@ const media_scroll_list_get_likes = async (req, res) => {
   console.log(req.params);
   req.body.limit1 = req.params.limit1;
   req.body.limit2 = req.params.limit2;
-  const media = await mediaModel.getScrollMediaLikes(req);
-  await res.json(media);
+  const medias = await mediaModel.getScrollMediaLikes(req);
+
+  for (const media of medias) {
+    const data = await getImage(media.filename);
+    const profilePicData = await getImage(media.profile_picture);
+    media.filename = await encode(data.Body);
+    media.profile_picture = await encode(profilePicData.Body);
+  }
+
+  await res.json(medias);
 };
 
 // get all images
@@ -70,12 +111,28 @@ const media_list_get_by_search = async (req, res) => {
   console.log(input);
   if (req.path.includes('descriptions')) {
     // User searched by descriptions
-    const media = await mediaModel.getMediaBySearchDescriptions(input);
-    await res.json(media);
+    const medias = await mediaModel.getMediaBySearchDescriptions(input);
+
+    for (const media of medias) {
+      const data = await getImage(media.filename);
+      const profilePicData = await getImage(media.profile_picture);
+      media.filename = await encode(data.Body);
+      media.profile_picture = await encode(profilePicData.Body);
+    }
+
+    await res.json(medias);
     //User searched by tags
   } else if (req.path.includes('tags')) {
-    const media = await mediaModel.getMediaBySearchTags(input);
-    await res.json(media);
+    const medias = await mediaModel.getMediaBySearchTags(input);
+
+    for (const media of medias) {
+      const data = await getImage(media.filename);
+      const profilePicData = await getImage(media.profile_picture);
+      media.filename = await encode(data.Body);
+      media.profile_picture = await encode(profilePicData.Body);
+    }
+
+    await res.json(medias);
   }
 };
 
@@ -137,15 +194,14 @@ const media_create = async (req, res) => {
       + date.toTimeString().split(' ')[0];
   req.body.postDate = date;
 
-  // Check medias mimetype and assing correct value to req.body
+  // Check medias mimetype and assign correct value to req.body
   if (req.file.mimetype.includes('image')) {
     req.body.mediatype = 'image';
   } else {
     req.body.mediatype = 'video';
   }
 
-  // Delete Uploaded file from machine if it is image, only Thumbnails are used anyways and now exif data is exctracted too.
-  // Videos will be kept in Uploads
+  // Delete from machine, data is always loaded from S3
   if (req.file.mimetype.includes('image')) {
     try {
       fs.unlink(`Uploads/${req.file.filename}`, err => {
@@ -210,6 +266,31 @@ const make_thumbnail = async (req, res, next) => {
           './Thumbnails/' + req.file.filename);
       if (ready) {
         console.log('make_thumbnail', ready);
+        // Upload image to s3
+        const thumnailBinaryContent = await fs.readFileSync(
+            './Thumbnails/' + req.file.filename);
+
+        console.log('check type: ',
+            await FileType.fromFile('./Thumbnails/' + req.file.filename));
+        const ext = await FileType.fromFile(
+            './Thumbnails/' + req.file.filename);
+        req.body.filename = `${uuid()}${req.file.filename}.${ext.ext}`;
+        fs.unlink(`Thumbnails/${req.file.filename}`, err => {
+          if (err) throw err;
+          // Images are saved in Thumbnails
+          console.log(`Removing Thumbnails/${req.file.filename}`);
+        });
+
+        const s3Params = {
+          Body: thumnailBinaryContent,
+          Bucket: process.env.AWS_BUCKET,
+          Key: req.body.filename,
+        };
+        console.log('thumnailBinaryContent:', thumnailBinaryContent);
+        await s3.putObject(s3Params, (err, data) => {
+          if (err) console.log(err, err.stack); // An error occured
+          else console.log(data); //Succesful response
+        });
         next();
       }
     } catch (e) {
@@ -218,6 +299,29 @@ const make_thumbnail = async (req, res, next) => {
     }
     // Media was a video
   } else {
+    // Upload video to s3
+    console.log('req.file.filename before s3: ', req.file.filename);
+    const thumnailBinaryContent = await fs.readFileSync(
+        './Uploads/' + req.file.filename);
+    console.log('check type: ',
+        await FileType.fromFile('./Uploads/' + req.file.filename));
+    const ext = await FileType.fromFile('./Uploads/' + req.file.filename);
+    req.body.filename = `${uuid()}${req.file.filename}.${ext.ext}`;
+    fs.unlink(`Uploads/${req.file.filename}`, err => {
+      if (err) throw err;
+      // Images are saved in Thumbnails
+      console.log(`Removing Uploads/${req.file.filename}`);
+    });
+    const s3Params = {
+      Body: thumnailBinaryContent,
+      Bucket: process.env.AWS_BUCKET,
+      Key: req.body.filename,
+    };
+    console.log('thumnailBinaryContent:', thumnailBinaryContent);
+    await s3.putObject(s3Params, (err, data) => {
+      if (err) console.log(err, err.stack); // An error occured
+      else console.log(data); //Succesful response
+    });
     next();
   }
 };
@@ -242,8 +346,16 @@ const chosen_media_get_by_owner = async (req, res) => {
     // ... it was video
     req.body.mediatype = 'video';
   }
-  const media = await mediaModel.getChosenMediaByOwner(req);
-  await res.json(media);
+  const medias = await mediaModel.getChosenMediaByOwner(req);
+
+  for (const media of medias) {
+    const data = await getImage(media.filename);
+    const profilePicData = await getImage(media.profile_picture);
+    media.filename = await encode(data.Body);
+    media.profile_picture = await encode(profilePicData.Body);
+  }
+
+  await res.json(medias);
 };
 
 // Get specified type of media of a user, path includes requested mediatype
@@ -282,23 +394,17 @@ const media_delete = async (req, res) => {
   // mediaOwner user_id matches logged in user or logged in user is admin
   if (mediaOwner.user_id == req.user.id || req.user.admin == 1) {
 
-    // Delete files from the machine
-    if (mediaOwner.mediatype === 'image') {
-      // mediatype was image
-      fs.unlink(`Thumbnails/${mediaOwner.filename}`, err => {
-        if (err) throw err;
-        // Images are saved in Thumbnails
-        console.log(`Removing Thumbnails/${mediaOwner.filename}`);
-      });
-    } else {
-      // ... was a video
-      fs.unlink(`Uploads/${mediaOwner.filename}`, err => {
-        if (err) throw err;
-        // Videos are saved in Uploads
-        console.log(`Removing Uploads/${mediaOwner.filename}`);
-      });
-    }
-    // query to delete reference from db
+    const params = {
+      Bucket: process.env.AWS_BUCKET,
+      Key: mediaOwner.filename,
+    };
+
+    s3.deleteObject(params, function(err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else console.log(data);           // successful response
+    });
+
+    // Query to delete reference from db
     const mediaDeleted = await mediaModel.deleteMedia(req.params.media_id);
     await res.json(mediaDeleted);
   } else {

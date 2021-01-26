@@ -20,7 +20,7 @@ const login = (req, res) => {
       if (err) {
         res.send(err);
       }
-      // Generate a signed son web token with the contents of user object and return it in the response
+      // Generate a signed json web token with the contents of user object and return it in the response
       const token = jwt.sign(user, process.env.JWT);
       return res.json({user, token});
     });
@@ -56,9 +56,9 @@ const user_create_post = async (req, res, next) => {
         req.body.admin = 0;
 
         // Insert placeholder image as profile pic
-        req.body.profile_picture = `portrait_placeholder.png`
+        req.body.profile_picture = 'portrait_placeholder.png'
 
-        console.log('authController: salt and hash craeted, pw hashed');
+        console.log('authController: salt and hash created, pw hashed');
 
         if (await userModel.insertUser(req)) {
           next();

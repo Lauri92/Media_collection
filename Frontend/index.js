@@ -545,7 +545,7 @@ getTotalMediaCount();
 
       // Set profile picture in nav bar
       const profileImg = document.createElement('img');
-      profileImg.src = `./Profilepics/${userInfo.profile_picture}`;
+      profileImg.src = 'data:image/jpeg;base64,' + userInfo.profile_picture;
       profileButton.appendChild(profileImg);
 
     } catch (e) {
@@ -690,10 +690,10 @@ getTotalMediaCount();
     // Place information to cards
     //Check if the media is image or video and only create either one
     if (media.mediatype === 'image') {
-      smallCardImg.src = url + '/Thumbnails/' + media.filename;
+      smallCardImg.src = 'data:image/jpeg;base64,' + media.filename;
       smallCardDiv.appendChild(smallCardImg);
     } else {
-      smallCardVid.src = url + '/Uploads/' + media.filename;
+      smallCardVid.src = 'data:video/mp4;base64,' + media.filename;
       smallCardDiv.appendChild(smallCardVid);
     }
 
@@ -761,10 +761,10 @@ getTotalMediaCount();
       const bigCardVideo = document.createElement('video');
 
       if (media.mediatype === 'image') {
-        bigCardImage.src = url + '/Thumbnails/' + media.filename;
+        bigCardImage.src = 'data:image/jpeg;base64,' + media.filename;
         bigCardMediaDiv.appendChild(bigCardImage);
       } else {
-        bigCardVideo.src = url + '/Uploads/' + media.filename;
+        bigCardVideo.src = 'data:video/mp4;base64,' + media.filename;
         bigCardVideo.controls = true;
         bigCardMediaDiv.appendChild(bigCardVideo);
       }
@@ -785,7 +785,7 @@ getTotalMediaCount();
         mediaOwner.innerHTML += tag.tag + ' ';
       }
 
-      mediaOwnerProfilePic.src = `./Profilepics/${media.profile_picture}`;
+      mediaOwnerProfilePic.src = 'data:image/jpeg;base64,' + media.profile_picture;
       userInfoDiv.appendChild(mediaOwner);
       userInfoDiv.appendChild(mediaOwnerProfilePic);
 
@@ -825,7 +825,7 @@ getTotalMediaCount();
         // Create img element for comment owner profile pic
         const commentOwnerProfilePic = document.createElement('img');
         commentOwnerProfilePic.className = 'comment-profile-pic';
-        commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
+        commentOwnerProfilePic.src = 'data:image/jpeg;base64,' + comment.profile_picture;
         commentContainerDiv.appendChild(commentOwnerProfilePic);
 
         // Create p element for user input date
@@ -1011,7 +1011,7 @@ getTotalMediaCount();
             // Create img element for comment owner profile pic
             const commentOwnerProfilePic = document.createElement('img');
             commentOwnerProfilePic.className = 'comment-profile-pic';
-            commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
+            commentOwnerProfilePic.src = 'data:image/jpeg;base64,' + comment.profile_picture;
             commentContainerDiv.appendChild(commentOwnerProfilePic);
 
             // Create p element for user input date

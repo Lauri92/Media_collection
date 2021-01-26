@@ -226,8 +226,8 @@ const getLoggedUser = async () => {
     // Set profile picture in nav bar and in profile picture holder
     const profileImg = document.createElement('img');
     const bigProfileImg = document.querySelector('.user-profile-pic');
-    bigProfileImg.src = `./Profilepics/${userInfo.profile_picture}`;
-    profileImg.src = `./Profilepics/${userInfo.profile_picture}`;
+    bigProfileImg.src = 'data:image/jpeg;base64,' + userInfo.profile_picture;
+    profileImg.src = 'data:image/jpeg;base64,' + userInfo.profile_picture;
     profileButton.appendChild(profileImg);
 
     // Set username in user page
@@ -336,7 +336,8 @@ changeProfilePicForm.addEventListener('submit', async (e) => {
   console.log('change profilepic response', json);
   closeModals();
   document.querySelector('.cards').innerHTML = '';
-  await getLoggedUser();
+  // Wait for image to be uploaded into S3...
+  setTimeout(getLoggedUser, 5000);
 });
 
 // Logout logged user
@@ -452,10 +453,10 @@ const createSmallCards = async (media) => {
   // Place information to cards
   //Check if the media is image or video and only create either one
   if (media.mediatype === 'image') {
-    smallCardImg.src = url + '/Thumbnails/' + media.filename;
+    smallCardImg.src = 'data:image/jpeg;base64,' + media.filename;
     smallCardDiv.appendChild(smallCardImg);
   } else {
-    smallCardVid.src = url + '/Uploads/' + media.filename;
+    smallCardVid.src = 'data:video/mp4;base64,' + media.filename;
     smallCardDiv.appendChild(smallCardVid);
   }
 
@@ -511,14 +512,14 @@ const createSmallCards = async (media) => {
     if (media.mediatype === 'image') {
       const smallCardMediaDeleteThumbnail = document.createElement('img');
       smallCardMediaDeleteThumbnail.id = 'smallCardMediaDeleteThumbnail';
-      smallCardMediaDeleteThumbnail.src = '/Thumbnails/' + media.filename;
+      smallCardMediaDeleteThumbnail.src = 'data:image/jpeg;base64,' + media.filename;
       const deleteMediaForm = document.querySelector('#delete-media-form');
       deleteMediaForm.insertBefore(smallCardMediaDeleteThumbnail,
           deleteMediaForm.firstChild);
     } else {
       const smallCardMediaDeleteThumbnail = document.createElement('video');
       smallCardMediaDeleteThumbnail.id = 'smallCardMediaDeleteThumbnail';
-      smallCardMediaDeleteThumbnail.src = '/Uploads/' + media.filename;
+      smallCardMediaDeleteThumbnail.src = 'data:image/jpeg;base64,' + media.filename;
       const deleteMediaForm = document.querySelector('#delete-media-form');
       deleteMediaForm.insertBefore(smallCardMediaDeleteThumbnail,
           deleteMediaForm.firstChild);
@@ -594,10 +595,10 @@ const createBigCard = async (media) => {
     const bigCardVideo = document.createElement('video');
 
     if (media.mediatype === 'image') {
-      bigCardImage.src = url + '/Thumbnails/' + media.filename;
+      bigCardImage.src = 'data:image/jpeg;base64,' + media.filename;
       bigCardMediaDiv.appendChild(bigCardImage);
     } else {
-      bigCardVideo.src = url + '/Uploads/' + media.filename;
+      bigCardVideo.src = 'data:video/mp4;base64,' + media.filename;
       bigCardVideo.controls = true;
       bigCardMediaDiv.appendChild(bigCardVideo);
     }
@@ -618,7 +619,7 @@ const createBigCard = async (media) => {
       mediaOwner.innerHTML += tag.tag + ' ';
     }
 
-    mediaOwnerProfilePic.src = `./Profilepics/${media.profile_picture}`;
+    mediaOwnerProfilePic.src = 'data:image/jpeg;base64,' + media.profile_picture;
     userInfoDiv.appendChild(mediaOwner);
     userInfoDiv.appendChild(mediaOwnerProfilePic);
 
@@ -658,7 +659,7 @@ const createBigCard = async (media) => {
       // Create img element for comment owner profile pic
       const commentOwnerProfilePic = document.createElement('img');
       commentOwnerProfilePic.className = 'comment-profile-pic';
-      commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
+      commentOwnerProfilePic.src = 'data:image/jpeg;base64,' + comment.profile_picture;
       commentContainerDiv.appendChild(commentOwnerProfilePic);
 
       // Create p element for user input date
@@ -825,7 +826,7 @@ const createBigCard = async (media) => {
           // Create img element for comment owner profile pic
           const commentOwnerProfilePic = document.createElement('img');
           commentOwnerProfilePic.className = 'comment-profile-pic';
-          commentOwnerProfilePic.src = `./Profilepics/${comment.profile_picture}`;
+          commentOwnerProfilePic.src = 'data:image/jpeg;base64,' + comment.profile_picture;
           commentContainerDiv.appendChild(commentOwnerProfilePic);
 
           // Create p element for user input date
@@ -875,14 +876,14 @@ const createBigCard = async (media) => {
       if (media.mediatype === 'image') {
         const deleteMediaThumbnail = document.createElement('img');
         deleteMediaThumbnail.id = 'delete-media-thumbnail';
-        deleteMediaThumbnail.src = '/Thumbnails/' + media.filename;
+        deleteMediaThumbnail.src = 'data:image/jpeg;base64,' + media.filename;
         const deleteMediaForm = document.querySelector('#delete-media-form');
         deleteMediaForm.insertBefore(deleteMediaThumbnail,
             deleteMediaForm.firstChild);
       } else {
         const deleteMediaThumbnail = document.createElement('video');
         deleteMediaThumbnail.id = 'delete-media-thumbnail';
-        deleteMediaThumbnail.src = '/Uploads/' + media.filename;
+        deleteMediaThumbnail.src = 'data:video/mp4;base64,' + media.filename;
         const deleteMediaForm = document.querySelector('#delete-media-form');
         deleteMediaForm.insertBefore(deleteMediaThumbnail,
             deleteMediaForm.firstChild);

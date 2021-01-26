@@ -243,7 +243,7 @@ const insertMedia = async (req) => {
         [
           req.body.id,
           req.body.description,
-          req.file.filename,
+          req.body.filename,
           req.body.coords,
           req.body.dateTimeOriginal,
           req.body.postDate,

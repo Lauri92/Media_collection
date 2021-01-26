@@ -3,7 +3,32 @@
 const userModel = require('../Models/userModel');
 const {validationResult} = require('express-validator');
 const {makeThumbnail} = require('../Utils/resize');
+const FileType = require('file-type');
+const uuid = require('uuid').v4;
 const fs = require('fs');
+const aws = require('aws-sdk');
+require('dotenv').config();
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
+const s3 = new aws.S3({apiVersion: '2006-03-01'});
+
+// Get image from S3
+const getImage = async (key) => {
+  return s3.getObject(
+      {
+        Bucket: process.env.AWS_BUCKET,
+        Key: key,
+      },
+  ).promise();
+};
+
+// Encode the data to base64
+const encode = async (data) => {
+  let buf = Buffer.from(data);
+  return buf.toString('base64');
+};
 
 // Create thumbnail for profile picture with sharp --> resize.js
 const make_thumbnail = async (req, res, next) => {
@@ -14,6 +39,36 @@ const make_thumbnail = async (req, res, next) => {
         './Profilepics/' + req.file.filename);
     if (ready) {
       console.log('make_thumbnail', ready);
+
+      // Upload image to s3
+      const thumnailBinaryContent = await fs.readFileSync(
+          './Profilepics/' + req.file.filename);
+
+      console.log('check type: ',
+          await FileType.fromFile('./Profilepics/' + req.file.filename));
+      const ext = await FileType.fromFile(
+          './Profilepics/' + req.file.filename);
+
+      req.body.filename = `${uuid()}${req.file.filename}.${ext.ext}`;
+      console.log('req.body.filename : ', req.body.filename);
+
+      fs.unlink(`Profilepics/${req.file.filename}`, err => {
+        if (err) throw err;
+        // Images are saved in Thumbnails
+        console.log(`Removing Thumbnails/${req.file.filename}`);
+      });
+
+      const s3Params = {
+        Body: thumnailBinaryContent,
+        Bucket: process.env.AWS_BUCKET,
+        Key: req.body.filename,
+      };
+      console.log('thumnailBinaryContent:', thumnailBinaryContent);
+      await s3.putObject(s3Params, (err, data) => {
+        if (err) console.log(err, err.stack); // An error occured
+        else console.log(data); //Succesful response
+      });
+
       next();
     }
   } catch (e) {
@@ -41,28 +96,35 @@ const update_profile_pic = async (req, res) => {
     return res.status(400).json({errors: errors.array()});
   }
 
-  //Add jwt user_id as part of body
+  //Add jwt user_id as part of body so profile pic has related user id
   req.body.id = req.user.id;
 
-  // Delete Uploaded file from machine if it is image, only Thumbnails and Profilepics are used, Videos stay in Uploads
+  // All images are stored in S3/
   try {
     fs.unlink(`Uploads/${req.file.filename}`, err => {
       if (err) throw err;
       console.log(`Removing Uploads/${req.file.filename}`);
     });
-    // Also delete old profile picture unless it is placeholder image, which is default for all new users
+
+    // Also delete old profile picture from S3 unless it is placeholder image, which is default for all new users
     const oldProfilePic = await userModel.getUser(req.user.id);
     if (oldProfilePic.profile_picture !== 'portrait_placeholder.png') {
-      fs.unlink(`Profilepics/${oldProfilePic.profile_picture}`, err => {
-        if (err) throw err;
-        console.log(`Removing Profilepics/${oldProfilePic.profile_picture}`);
+      const params = {
+        Bucket: process.env.AWS_BUCKET,
+        Key: oldProfilePic.profile_picture,
+      };
+
+      s3.deleteObject(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else console.log(data);           // successful response
       });
     }
+
   } catch (e) {
     console.log(e.message);
   }
 
-  // Inser new profile picture
+  // Insert new profile picture
   const updated = await userModel.updateProfilePic(req);
   res.json(updated);
 };
@@ -96,6 +158,9 @@ const user_create = async (req, res) => {
 const check_username = async (req, res) => {
   // No returning of JWT values because updated profile pic value wouldn't be included
   const user = await userModel.getUser(req.user.id);
+
+  const profilePicData = await getImage(user.profile_picture);
+  user.profile_picture = await encode(profilePicData.Body);
   await res.json(user);
 };
 

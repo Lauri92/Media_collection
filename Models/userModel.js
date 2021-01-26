@@ -47,16 +47,17 @@ const insertUser = async (req) => {
 
 // Update user profile picture
 const updateProfilePic = async (req) => {
+  console.log(req.body);
   try {
     const [rows] = await promisePool.execute(
         'UPDATE users SET profile_picture = ? WHERE id = ?',
         [
-          req.file.filename,
+          req.body.filename,
           req.body.id,
         ]);
     console.log('userModel insert: ', rows);
     // TODO: Alter return value
-    return ({'message': 'Profile picture updated'});
+    return ({message: 'Profile picture updated'});
   } catch (e) {
     console.error(e.message);
   }

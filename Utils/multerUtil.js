@@ -20,7 +20,7 @@ const mediaFileFilter = (req, file, cb) => {
 // Prevent multer for saving wrong file types, allow images for profile pictures
 const imageFileFilter = (req, file, cb) => {
   console.log(`fileFilter file: ${file.mimetype}`);
-  // Only accept images and videos
+  // Only accept images
   try {
     if (file.mimetype.includes('image')) {
       return cb(null, true);
