@@ -9,8 +9,13 @@ const passport = require('../Utils/pass');
 const {mediaFileFilter} = require('../Utils/multerUtil');
 
 // Upload image and add size limit
-const limits = {fileSize: 50 * 1024 * 1024};  //50MB
-const upload = multer({limits: limits, dest: 'Uploads/', mediaFileFilter});
+const limits = {fileSize: 20 * 1024 * 1024};  //10MB
+const upload = multer({
+  limits: limits, dest: 'Uploads/', onError: function(err, next) {
+    console.log('error', err);
+    next(err);
+  }, mediaFileFilter,
+});
 
 const injectFile = (req, res, next) => {
   console.log('injectFile req.file: ', req.file);
@@ -31,7 +36,8 @@ router.get('/media', mediaController.media_list_get);
 router.get('/scroll/:limit1/:limit2', mediaController.media_scroll_list_get);
 
 // Get scrolling media likes -> rows of 6
-router.get('/scrolllikes/:limit1/:limit2', mediaController.media_scroll_list_get_likes);
+router.get('/scrolllikes/:limit1/:limit2',
+    mediaController.media_scroll_list_get_likes);
 
 // Get all images
 router.get('/pics', mediaController.pic_list_get);

@@ -218,13 +218,8 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/webstorm,node
 
-Thumbnails
-
-Uploads
-
-Profilepics
-
 .idea/jsLibraryMappings.xml
+.idea/prettier.xml
 
 #http certificate and keys must be generated on every machine and never move out of there
 certrequest.csr

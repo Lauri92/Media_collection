@@ -1,0 +1,1 @@
+Place to keep uploaded profile pictures temporary before uploading to S3

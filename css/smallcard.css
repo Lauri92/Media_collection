@@ -84,6 +84,7 @@ ul {
 
 /* Initially not shown, show when user is logged in */
 #logout-button, #profile-button, #add-media-button {
+    cursor: pointer;
     display: none;
 }
 
@@ -138,7 +139,7 @@ ul {
 .card img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: fill;
     position: absolute;
     top: 0;
     left: 0;
@@ -148,7 +149,7 @@ ul {
 .card video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: fill;
     position: absolute;
     top: 0;
     left: 0;
@@ -254,7 +255,7 @@ ul {
     }
 
     .card .info {
-        display: none;
+        /*display: none;*/
     }
 }
 

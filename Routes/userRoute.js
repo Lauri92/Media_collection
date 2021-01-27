@@ -8,7 +8,7 @@ const multer = require('multer');
 const {imageFileFilter} = require('../Utils/multerUtil');
 
 // Upload image and add size limit
-const limits = {fileSize: 50 * 1024 * 1024};  //50MB
+const limits = {fileSize: 20 * 1024 * 1024};  //20MB
 const upload = multer({limits: limits, dest: 'Uploads/', imageFileFilter});
 
 const injectFile = (req, res, next) => {

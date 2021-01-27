@@ -9,7 +9,6 @@ const mediaRoute = require('./Routes/mediaRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
-const noTokenLikeRoute = require('./Routes/noTokenLikeRoute');
 const commentRoute = require('./Routes/commentRoute');
 const hashtagRoute = require('./Routes/hashtagRoute');
 const app = express();
@@ -23,12 +22,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //Serve static files from root.
 app.use(express.static('.'));
 
-//Serve static files from uploads.
-//app.use(express.static('Uploads')); //serve static files for images
-
-//Serve static files from thumbnails.
-app.use('/Thumbnails', express.static('Thumbnails'));
-
+// Check where the app is launched
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 if (process.env.NODE_ENV === 'production') {
   require('./production')(app, process.env.PORT);
@@ -40,8 +34,6 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use('/', rootRoute);
 app.use('/auth', authRoute);
-app.use('/notokenlikes', noTokenLikeRoute);
-app.use('/notokencomments', commentRoute);
 app.use('/media', mediaRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
 app.use('/profile', passport.authenticate('jwt', {session: false}),

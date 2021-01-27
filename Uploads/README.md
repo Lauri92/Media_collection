@@ -1,0 +1,1 @@
+Temporary location for all uploads before resizing.

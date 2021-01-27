@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = (app, port) => {
+  // if ssl was included
+  /*
   app.enable('trust proxy');
 
   app.use((req, res, next) => {
@@ -14,4 +16,9 @@ module.exports = (app, port) => {
     }
   });
 app.listen(port, () => console.log(`app listen on port ${port}`))
+   */
+
+  // No ssl for heroku
+  const PORT = process.env.PORT;
+  app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };

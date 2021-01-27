@@ -1,30 +1,7 @@
 'use strict';
 const commentModel = require('../Models/commentModel');
 const {validationResult} = require('express-validator');
-
-const aws = require('aws-sdk');
-require('dotenv').config();
-aws.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-});
-const s3 = new aws.S3({apiVersion: '2006-03-01'});
-
-// Get image from S3
-const getImage = async (key) => {
-  return s3.getObject(
-      {
-        Bucket: process.env.AWS_BUCKET,
-        Key: key,
-      },
-  ).promise();
-};
-
-// Encode the data to base64
-const encode = async (data) => {
-  let buf = Buffer.from(data);
-  return buf.toString('base64');
-};
+const encode = require('../Utils/encode');
 
 // Get all comments of a media
 const get_comments_by_pic_id = async (req, res) => {
@@ -34,8 +11,8 @@ const get_comments_by_pic_id = async (req, res) => {
   const comments = await commentModel.getCommentsByPicId(req.params.id);
 
   for (const comment of comments) {
-    const profilePicData = await getImage(comment.profile_picture);
-    comment.profile_picture = await encode(profilePicData.Body);
+    const profilePicData = await encode.getImage(comment.profile_picture);
+    comment.profile_picture = await encode.encode(profilePicData.Body);
   }
 
   await res.json(comments);

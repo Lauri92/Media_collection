@@ -5,6 +5,7 @@ const hashtagModel = require('../Models/hashtagModel');
 const {validationResult} = require('express-validator');
 const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
+const encode = require('../Utils/encode');
 const FileType = require('file-type');
 const fs = require('fs');
 const aws = require('aws-sdk');
@@ -15,22 +16,6 @@ aws.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 const s3 = new aws.S3({apiVersion: '2006-03-01'});
-
-// Get image from S3
-const getImage = async (key) => {
-  return s3.getObject(
-      {
-        Bucket: process.env.AWS_BUCKET,
-        Key: key,
-      },
-  ).promise();
-};
-
-// Encode the data to base64
-const encode = async (data) => {
-  let buf = Buffer.from(data);
-  return buf.toString('base64');
-};
 
 // Get all media count
 const media_count_get = async (req, res) => {
@@ -61,10 +46,10 @@ const media_scroll_list_get = async (req, res) => {
   */
 
   for (const media of medias) {
-    const data = await getImage(media.filename);
-    const profilePicData = await getImage(media.profile_picture);
-    media.filename = await encode(data.Body);
-    media.profile_picture = await encode(profilePicData.Body);
+    const data = await encode.getImage(media.filename);
+    const profilePicData = await encode.getImage(media.profile_picture);
+    media.filename = await encode.encode(data.Body);
+    media.profile_picture = await encode.encode(profilePicData.Body);
   }
 
   await res.json(medias);
@@ -78,10 +63,10 @@ const media_scroll_list_get_likes = async (req, res) => {
   const medias = await mediaModel.getScrollMediaLikes(req);
 
   for (const media of medias) {
-    const data = await getImage(media.filename);
-    const profilePicData = await getImage(media.profile_picture);
-    media.filename = await encode(data.Body);
-    media.profile_picture = await encode(profilePicData.Body);
+    const data = await encode.getImage(media.filename);
+    const profilePicData = await encode.getImage(media.profile_picture);
+    media.filename = await encode.encode(data.Body);
+    media.profile_picture = await encode.encode(profilePicData.Body);
   }
 
   await res.json(medias);
@@ -114,10 +99,10 @@ const media_list_get_by_search = async (req, res) => {
     const medias = await mediaModel.getMediaBySearchDescriptions(input);
 
     for (const media of medias) {
-      const data = await getImage(media.filename);
-      const profilePicData = await getImage(media.profile_picture);
-      media.filename = await encode(data.Body);
-      media.profile_picture = await encode(profilePicData.Body);
+      const data = await encode.getImage(media.filename);
+      const profilePicData = await encode.getImage(media.profile_picture);
+      media.filename = await encode.encode(data.Body);
+      media.profile_picture = await encode.encode(profilePicData.Body);
     }
 
     await res.json(medias);
@@ -126,10 +111,10 @@ const media_list_get_by_search = async (req, res) => {
     const medias = await mediaModel.getMediaBySearchTags(input);
 
     for (const media of medias) {
-      const data = await getImage(media.filename);
-      const profilePicData = await getImage(media.profile_picture);
-      media.filename = await encode(data.Body);
-      media.profile_picture = await encode(profilePicData.Body);
+      const data = await encode.getImage(media.filename);
+      const profilePicData = await encode.getImage(media.profile_picture);
+      media.filename = await encode.encode(data.Body);
+      media.profile_picture = await encode.encode(profilePicData.Body);
     }
 
     await res.json(medias);
@@ -139,7 +124,6 @@ const media_list_get_by_search = async (req, res) => {
 // Controller for Creating media
 const media_create = async (req, res) => {
   //here we will create a pic with data coming from req
-  console.log('req.file: ', req.file);
 
   // Check if validation was passed without errors.
   const errors = validationResult(req);
@@ -166,19 +150,15 @@ const media_create = async (req, res) => {
   if (isExifdata) {
     // Get gps coordinates from image if THIS exifdata is actually available
     if (req.file.mimetype === 'image/jpeg') {
-      const coords = await ImageMeta.getCoordinates(req.file.path);
-      console.log('coords', coords);
-      req.body.coords = coords;
+      req.body.coords = await ImageMeta.getCoordinates(req.file.path);
     } else {
       req.body.coords = null;
     }
 
     // Get timestamp from image if THIS exifdata is actually available
     if (req.file.mimetype === 'image/jpeg') {
-      const dateTimeOriginal = await ImageMeta.getDateTimeOriginal(
+      req.body.dateTimeOriginal = await ImageMeta.getDateTimeOriginal(
           req.file.path);
-      console.log('dateTimeOriginal', dateTimeOriginal);
-      req.body.dateTimeOriginal = dateTimeOriginal;
     } else {
       req.body.dateTimeOriginal = null;
     }
@@ -206,7 +186,6 @@ const media_create = async (req, res) => {
     try {
       fs.unlink(`Uploads/${req.file.filename}`, err => {
         if (err) throw err;
-        console.log(`Removing Uploads/${req.file.filename}`);
       });
     } catch (e) {
       console.log(e.message);
@@ -244,7 +223,6 @@ const media_create = async (req, res) => {
   // Loop over each tag that the user entered and passed validations
   for await (const tag of uploadableTags) {
     req.body.tag = tag;
-    console.log(`Inserting ${tag} in for of loop`);
     await hashtagModel.insertHashtags(req);
   }
 
@@ -257,7 +235,6 @@ const media_create = async (req, res) => {
 
 // Create thumbnails with sharp --> resize.js
 const make_thumbnail = async (req, res, next) => {
-  console.log('make_thumbnail req.file.mimetype: ', req.file.mimetype);
   // If the posted media is image and not video, create thumbnail and resize
   if (req.file.mimetype.includes('image')) {
     try {
@@ -265,20 +242,15 @@ const make_thumbnail = async (req, res, next) => {
           req.file.path,
           './Thumbnails/' + req.file.filename);
       if (ready) {
-        console.log('make_thumbnail', ready);
         // Upload image to s3
         const thumnailBinaryContent = await fs.readFileSync(
             './Thumbnails/' + req.file.filename);
 
-        console.log('check type: ',
-            await FileType.fromFile('./Thumbnails/' + req.file.filename));
         const ext = await FileType.fromFile(
             './Thumbnails/' + req.file.filename);
         req.body.filename = `${uuid()}${req.file.filename}.${ext.ext}`;
         fs.unlink(`Thumbnails/${req.file.filename}`, err => {
           if (err) throw err;
-          // Images are saved in Thumbnails
-          console.log(`Removing Thumbnails/${req.file.filename}`);
         });
 
         const s3Params = {
@@ -286,10 +258,9 @@ const make_thumbnail = async (req, res, next) => {
           Bucket: process.env.AWS_BUCKET,
           Key: req.body.filename,
         };
-        console.log('thumnailBinaryContent:', thumnailBinaryContent);
         await s3.putObject(s3Params, (err, data) => {
           if (err) console.log(err, err.stack); // An error occured
-          else console.log(data); //Succesful response
+          else console.log(data); //Successful response
         });
         next();
       }
@@ -299,25 +270,18 @@ const make_thumbnail = async (req, res, next) => {
     }
     // Media was a video
   } else {
-    // Upload video to s3
-    console.log('req.file.filename before s3: ', req.file.filename);
     const thumnailBinaryContent = await fs.readFileSync(
         './Uploads/' + req.file.filename);
-    console.log('check type: ',
-        await FileType.fromFile('./Uploads/' + req.file.filename));
     const ext = await FileType.fromFile('./Uploads/' + req.file.filename);
     req.body.filename = `${uuid()}${req.file.filename}.${ext.ext}`;
     fs.unlink(`Uploads/${req.file.filename}`, err => {
       if (err) throw err;
-      // Images are saved in Thumbnails
-      console.log(`Removing Uploads/${req.file.filename}`);
     });
     const s3Params = {
       Body: thumnailBinaryContent,
       Bucket: process.env.AWS_BUCKET,
       Key: req.body.filename,
     };
-    console.log('thumnailBinaryContent:', thumnailBinaryContent);
     await s3.putObject(s3Params, (err, data) => {
       if (err) console.log(err, err.stack); // An error occured
       else console.log(data); //Succesful response
@@ -349,10 +313,10 @@ const chosen_media_get_by_owner = async (req, res) => {
   const medias = await mediaModel.getChosenMediaByOwner(req);
 
   for (const media of medias) {
-    const data = await getImage(media.filename);
-    const profilePicData = await getImage(media.profile_picture);
-    media.filename = await encode(data.Body);
-    media.profile_picture = await encode(profilePicData.Body);
+    const data = await encode.getImage(media.filename);
+    const profilePicData = await encode.getImage(media.profile_picture);
+    media.filename = await encode.encode(data.Body);
+    media.profile_picture = await encode.encode(profilePicData.Body);
   }
 
   await res.json(medias);
