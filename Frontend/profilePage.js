@@ -1,5 +1,6 @@
 'use strict';
-const url = 'https://localhost:8000';
+//const url = 'https://localhost:8000';
+const url = 'https://https://safe-hamlet-45360.herokuapp.com/';
 const body = document.body;
 
 // Map items
