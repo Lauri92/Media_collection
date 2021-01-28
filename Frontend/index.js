@@ -126,11 +126,13 @@ const createMediaCards = async (content) => {
 // Open the login modal
 loginButton.addEventListener('click', async (e) => {
   loginModal.style.display = 'flex';
+  body.style.overflow = 'hidden';
 });
 
 // Open the register modal
 registerButton.addEventListener('click', async (e) => {
   registerModal.style.display = 'flex';
+  body.style.overflow = 'hidden';
 });
 
 // Open modal for adding media
@@ -757,7 +759,6 @@ const createSmallCards = async (media) => {
 
 // Contains more detailed info about media, description, likes, comments..
 const createBigCard = async (media) => {
-  console.log(media);
   document.querySelector('.modal').style.display = 'flex';
   try {
 
@@ -1120,4 +1121,4 @@ if (isToken) {
   //getAllMedia();
 }
 
-//getSomeMedia();
+getSomeMedia();

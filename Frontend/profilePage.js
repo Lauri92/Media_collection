@@ -83,7 +83,7 @@ const getUserImagesCount = async () => {
     const imageCount = await response.json();
     console.log('imageCount: ', imageCount.count);
     const photoAmount = document.querySelector('.image-amount');
-    photoAmount.innerHTML = `${imageCount.count} Images`;
+    photoAmount.innerHTML = `Show ${imageCount.count} Images`;
 
   } catch (e) {
     console.log(e.message);
@@ -127,7 +127,7 @@ const getUserVideosCount = async () => {
     const videoCount = await response.json();
     console.log('videCount :', videoCount.count);
     const videoAmount = document.querySelector('.video-amount');
-    videoAmount.innerHTML = `${videoCount.count} Videos`;
+    videoAmount.innerHTML = `Show ${videoCount.count} Videos`;
   } catch (e) {
     console.log(e.message);
   }
@@ -492,9 +492,9 @@ const createSmallCards = async (media) => {
     console.log(e.message);
   }
 
-  smallCardInfo.appendChild(smallcardH2);
   smallCardInfo.appendChild(smallCardH1);
   smallCardInfo.appendChild(smallCardP);
+  smallCardInfo.appendChild(smallcardH2);
 
   smallCardDiv.appendChild(smallCardInfo);
   cards.appendChild(smallCardDiv);
