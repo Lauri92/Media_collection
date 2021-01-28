@@ -34,6 +34,7 @@ const user_create_post = async (req, res, next) => {
 
   try {
     // Check for email availability, if email is already in database don't allow creation
+    // undefined = email isn't taken
     const status = await userModel.checkEmailAvailability(req);
 
     const available = status === undefined ? true : false;
@@ -61,14 +62,14 @@ const user_create_post = async (req, res, next) => {
         console.log('authController: salt and hash created, pw hashed');
 
         if (await userModel.insertUser(req)) {
-          next();
+          res.status(200).json({message: 'Registration succesfull and account created'})
         } else {
-          res.status(400).json({error: 'register error'});
+          res.status(400).json({message: 'register error'});
         }
       }
     } else {
       // Email wasn't available
-      res.json({Message: 'Email is already taken'});
+      res.json({message: 'Email is already taken'});
     }
   } catch (e) {
     console.error(e.message);

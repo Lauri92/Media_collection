@@ -261,14 +261,14 @@ const insertMedia = async (req) => {
 const deleteMedia = async (media_id) => {
   console.log('mediaModel deleteMedia media_id: ', media_id);
   try {
-    const [rows] = await promisePool.execute(
-        'DELETE FROM medias WHERE id = ?', [media_id]);
     const [rows2] = await promisePool.execute(
         'DELETE FROM comments WHERE media_id = ?', [media_id]);
     const [rows3] = await promisePool.execute(
         'DELETE FROM likes WHERE media_id = ?', [media_id]);
     const [rows4] = await promisePool.execute(
         'DELETE FROM hashtags WHERE media_id = ?', [media_id]);
+    const [rows] = await promisePool.execute(
+        'DELETE FROM medias WHERE id = ?', [media_id]);
 
     return 'deleted media and associated likes and comments and hashtag references';
   } catch (e) {

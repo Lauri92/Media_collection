@@ -53,6 +53,7 @@ let isLoading = false;
 
 // Balls which are displayed when the window is scrolled to the bottom
 const loading = document.querySelector('.loading');
+const categoryLoadAnimation = document.querySelector('.category-load');
 
 // Add default values
 searchMostRecent.classList.add('active-search-option');
@@ -79,11 +80,19 @@ function showLoading() {
 
   loading.classList.add('show');
   if (toGet === 'recent' && limit1 < totalMediaCount) {
-    setTimeout(getSomeMedia, 250);
+    setTimeout(getSomeMedia);
   } else if (toGet === 'likes' && limit1 < totalMediaCount) {
-    setTimeout(getSomeLikedMedia, 250);
+    setTimeout(getSomeLikedMedia);
   } else {
     // Do nothing
+  }
+}
+
+function categoryLoad(toggle) {
+  if (toggle === true) {
+    categoryLoadAnimation.classList.add('show');
+  } else {
+    categoryLoadAnimation.classList.remove('show');
   }
 }
 
@@ -228,12 +237,10 @@ registerForm.addEventListener('submit', async (e) => {
         body: JSON.stringify(data),
       };
 
-      console.log(data);
-
-      //TODO: Allow registering to login without failures
       const response = await fetch(url + '/auth/register', fetchOptions);
       const json = await response.json();
       console.log('login response', json);
+      alert(json.message || json[0].param + ' ' + json[0].msg);
       registerModal.style.display = 'none';
       //TODO: Account created pop up?
     } else {
@@ -389,6 +396,7 @@ const getSomeMedia = async () => {
       },
     };
     if (isLoading === false) {
+      categoryLoad(true);
       isLoading = true;
       const response = await fetch(url + `/media/scroll/${limit1}/${limit2}`,
           options);
@@ -396,6 +404,7 @@ const getSomeMedia = async () => {
       await createMediaCards(media);
       limit1 = limit1 + 6;
       isLoading = false;
+      categoryLoad(false);
     }
   } catch (e) {
     console.log(e.message);
@@ -431,6 +440,7 @@ const getSomeLikedMedia = async () => {
       },
     };
     if (isLoading === false) {
+      categoryLoad(true);
       isLoading = true;
       const response = await fetch(
           url + `/media/scrolllikes/${limit1}/${limit2}`, options);
@@ -438,6 +448,7 @@ const getSomeLikedMedia = async () => {
       await createMediaCards(media);
       limit1 = limit1 + 6;
       isLoading = false;
+      categoryLoad(false);
     }
   } catch (e) {
     console.log(e.message);
@@ -611,15 +622,15 @@ function checkInputs() {
   const passwordValue = password.value.trim();
   const password2Value = password2.value.trim();
 
-  if (firstnameValue === '') {
-    setErrorFor(firstname, 'First name cannot be blank');
+  if (firstnameValue === '' || firstnameValue.length < 3) {
+    setErrorFor(firstname, 'First name value too short');
     errors++;
   } else {
     setSuccessFor(firstname);
   }
 
-  if (lastnameValue === '') {
-    setErrorFor(lastname, 'Last name cannot be blank');
+  if (lastnameValue === '' || lastnameValue.length < 3) {
+    setErrorFor(lastname, 'Last name value too short');
     errors++;
   } else {
     setSuccessFor(lastname);
@@ -635,15 +646,15 @@ function checkInputs() {
     setSuccessFor(email);
   }
 
-  if (passwordValue === '') {
-    setErrorFor(password, 'Password cannot be blank');
+  if (passwordValue === '' || !passwordValue.match('(?=.*[A-Z]).{8,}')) {
+    setErrorFor(password, 'Must contain capital letter and 8 characters');
     errors++;
   } else {
     setSuccessFor(password);
   }
 
-  if (password2Value === '') {
-    setErrorFor(password2, 'Password2 cannot be blank');
+  if (password2Value === '' || !passwordValue.match('(?=.*[A-Z]).{8,}')) {
+    setErrorFor(password2, 'Must contain capital letter and 8 characters');
     errors++;
   } else if (passwordValue !== password2Value) {
     setErrorFor(password2, 'Passwords does not match');
@@ -1109,4 +1120,4 @@ if (isToken) {
   //getAllMedia();
 }
 
-getSomeMedia();
+//getSomeMedia();

@@ -21,8 +21,7 @@ router.post('/register',
           'minimum length 8 characters, at least one capital letter').
           matches('(?=.*[A-Z]).{8,}'),
     ],
-    authController.user_create_post,
-    authController.login
+    authController.user_create_post
 );
 
 module.exports = router;

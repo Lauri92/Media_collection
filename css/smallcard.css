@@ -194,7 +194,7 @@ ul {
     justify-content: center;
 }
 
-.loading {
+.loading, .category-load {
     opacity: 0;
     display: flex;
     position: fixed;
@@ -204,7 +204,7 @@ ul {
     transition: opacity .3s ease-in;
 }
 
-.loading.show {
+.loading.show, .category-load.show{
     opacity: 1;
 }
 
