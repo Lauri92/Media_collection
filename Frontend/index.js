@@ -1,6 +1,6 @@
 'use strict';
-//const url = 'https://localhost:8000';
-const url = 'https://safe-hamlet-45360.herokuapp.com';
+const url = 'https://localhost:8000';
+//const url = 'https://safe-hamlet-45360.herokuapp.com';
 const body = document.body;
 
 // Map items
@@ -213,6 +213,7 @@ loginForm.addEventListener('submit', async (e) => {
       //Set token
       sessionStorage.setItem('token', json.token);
       console.log('token: ', sessionStorage.getItem('token'));
+      alert(`Welcome ${json.user.name}`);
       location.reload();
     }
   } catch (e) {
@@ -257,23 +258,29 @@ registerForm.addEventListener('submit', async (e) => {
 // TODO: Add thumbnail for videos too
 addMediaForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const fd = new FormData(addMediaForm);
-  const fetchOptions = {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-    },
-    body: fd,
-  };
-  const response = await fetch(url + '/media', fetchOptions);
-  const json = await response.json();
-  console.log('add media response', json);
-  console.log('json.media_id', json.id);
-  addMediaForm.reset();
-  document.querySelector('#fileinput-form-control').value = '';
-  document.querySelector('.to-be-uploaded-media').src = '';
-  addMediaModal.style.display = 'none';
-  body.style.overflow = 'visible';
+  try {
+    const fd = new FormData(addMediaForm);
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+      body: fd,
+    };
+    const response = await fetch(url + '/media', fetchOptions);
+    const json = await response.json();
+    console.log('add media response', json);
+    console.log('json.media_id', json.id);
+    addMediaForm.reset();
+    document.querySelector('#fileinput-form-control').value = '';
+    document.querySelector('.to-be-uploaded-media').src = '';
+    addMediaModal.style.display = 'none';
+    body.style.overflow = 'visible';
+    alert('Media added');
+  } catch (e) {
+    console.error(e);
+    alert('Failed to post');
+  }
 });
 
 // Search for most recent media
@@ -563,6 +570,7 @@ const getLoggedUser = async () => {
 
   } catch (e) {
     console.log(e.message);
+
   }
 };
 

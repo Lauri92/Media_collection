@@ -1,1 +1,1 @@
-Place to keep uploaded media thumbnails temporary before uploading to S3
+Place to keep uploaded media thumbnails temporarily before uploading to S3

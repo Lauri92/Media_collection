@@ -21,7 +21,8 @@ const login = (req, res) => {
         res.send(err);
       }
       // Generate a signed json web token with the contents of user object and return it in the response
-      const token = jwt.sign(user, process.env.JWT);
+      // expiry time could be added too but for now the tokens exist as long as the web page is open
+      const token = jwt.sign(user, process.env.JWT/*, { expiresIn: 60 * 5 }*/);
       return res.json({user, token});
     });
   })(req, res);
@@ -79,9 +80,9 @@ const user_create_post = async (req, res, next) => {
 // Handle logout
 const logout = (req, res) => {
   // Removes req.user
+  // Redirects to index.html
   req.logout();
 
-  // TODO: Redirect to new page?
   res.json({message: 'You have logged out'});
 };
 

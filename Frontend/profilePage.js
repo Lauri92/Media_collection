@@ -1,6 +1,6 @@
 'use strict';
-//const url = 'https://localhost:8000';
-const url = 'https://safe-hamlet-45360.herokuapp.com';
+const url = 'https://localhost:8000';
+//const url = 'https://safe-hamlet-45360.herokuapp.com';
 const body = document.body;
 
 // Map items
@@ -278,26 +278,32 @@ imgInput.onchange = function() {
 // Add-media request
 // TODO: Add thumbnail for videos too
 addMediaForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const fd = new FormData(addMediaForm);
-  const fetchOptions = {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-    },
-    body: fd,
-  };
-  const response = await fetch(url + '/media', fetchOptions);
-  const json = await response.json();
-  console.log('add media response', json);
-  console.log('json.pick_id', json.id);
-  await getUserImagesCount();
-  await getUserVideosCount();
-  addMediaForm.reset();
-  document.querySelector('#fileinput-form-control').value = '';
-  document.querySelector('.to-be-uploaded-media').src = '';
-  addMediaModal.style.display = 'none';
-  body.style.overflow = 'visible';
+  try {
+    e.preventDefault();
+    const fd = new FormData(addMediaForm);
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+      body: fd,
+    };
+    const response = await fetch(url + '/media', fetchOptions);
+    const json = await response.json();
+    console.log('add media response', json);
+    console.log('json.pick_id', json.id);
+    await getUserImagesCount();
+    await getUserVideosCount();
+    addMediaForm.reset();
+    document.querySelector('#fileinput-form-control').value = '';
+    document.querySelector('.to-be-uploaded-media').src = '';
+    addMediaModal.style.display = 'none';
+    body.style.overflow = 'visible';
+    alert('Media added');
+  } catch (e) {
+    console.error(e);
+    alert('Failed to post')
+  }
 });
 
 // Open modal for changing profile picture
@@ -322,23 +328,29 @@ profilePicInput.onchange = function() {
 // Change profile pic request
 changeProfilePicForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  console.log('Attempt to change profile pic');
-  e.preventDefault();
-  const fd = new FormData(changeProfilePicForm);
-  const fetchOptions = {
-    method: 'PUT',
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-    },
-    body: fd,
-  };
-  const response = await fetch(url + '/user', fetchOptions);
-  const json = await response.json();
-  console.log('change profilepic response', json);
-  closeModals();
-  document.querySelector('.cards').innerHTML = '';
-  // Wait for image to be uploaded into S3...
-  setTimeout(getLoggedUser, 5000);
+  try {
+    console.log('Attempt to change profile pic');
+    e.preventDefault();
+    const fd = new FormData(changeProfilePicForm);
+    const fetchOptions = {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+      body: fd,
+    };
+    const response = await fetch(url + '/user', fetchOptions);
+    const json = await response.json();
+    console.log('change profilepic response', json);
+    closeModals();
+    document.querySelector('.cards').innerHTML = '';
+    // Wait for image to be uploaded into S3...
+    setTimeout(getLoggedUser, 5000);
+    alert('Profile image updated')
+  } catch (e) {
+    console.error(e)
+    alert('Error changing profile picture')
+  }
 });
 
 // Logout logged user
