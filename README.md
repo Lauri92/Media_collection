@@ -15,7 +15,7 @@ controller.
 
 * Possibility to browse photos and videos posted by users.
 
-* Browse by newest and most liked or use search tool to search by a keyword.
+* Browse by newest and most liked
 
 * Search feature to search with keyword, query the database by searching from media descriptions or hashtags
 
@@ -32,9 +32,9 @@ controller.
 ## Security
 
 * Passwords are hashed by using [bcrypt.js](https://www.npmjs.com/package/bcryptjs) package
-* Authorization is tracked via JSON webtokens which are signed by using private secret key. Some GET requests and all
-  POST, PUT and DELETE requests require a json webtoken. Whenever the user wants to access a protected route or
-  resource, the user should provide a JWT in the Authorization header using Bearer schema.
+* Authorization is tracked via JSON webtokens which are signed by using private secret key and issued to user at log
+  in. Some GET requests and all POST, PUT and DELETE requests require a json webtoken. Whenever the user wants to access
+  a protected route or resource, the user has to provide a JWT in the Authorization header using Bearer schema.
 
 ## Database model for database
 
@@ -57,7 +57,7 @@ The implemented relational database is MariaDB. All information is stored in 5 d
     * Id, Media_id (id of media this like references to), Likes (user liked), Dislikes (user disliked, this actually has
       no use), User_id (who liked)
 
-* Hastags
+* Hashtags
     * Id, Tag (name user gave for tag attached to an image), Media_id (id of media this tag references to)
 
 <img src="./DB%20constraints.png" width="800" height="500" alt="db-constraints">
@@ -69,7 +69,8 @@ Npm package used for handling SQL connection is [Node MySQL 2](https://www.npmjs
 
 Queries are executed using prepared statements which is a way to deal with SQL injection attacks and provide better
 performance than standard queries. The application uses a connection pool which allows a connection to be open to MySQL
-server all the time instead of closing the connection after every query, this also increases performance (Database/db).
+server all the time instead of closing the connection after every query, this also increases performance (see
+Database/db).
 
 When storing medias, only the key to media is saved into the database. The medias are uploaded into AWS S3 bucket for
 fetching.
@@ -78,8 +79,8 @@ fetching.
 
 All of front end is done by using vanilla JS, no frontend libraries or frameworks are implemented, not even jQuery is
 used. CSS is also completely built up from the scratch and the app doesn't use any external CSS frameworks like
-bootstrap. Also the app doesn't use any templating engine but rather just sends the data to client in json form where it is parsed
-and used to modify the DOM dynamically.
+bootstrap. Also the app doesn't use any templating engine but rather just sends the data to client in json form where it
+is parsed and used to modify the DOM dynamically.
 
 ## Known issues
 

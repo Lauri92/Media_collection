@@ -28,13 +28,12 @@ passport.use(new Strategy(
     }));
 
 
+// Check token
 passport.use(new JWTStrategy({
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT,
     },
-
     async (jwtPayLoad, done) => {
-
       try {
         //console.log('util pass JWT', jwtPayLoad);
         if (jwtPayLoad === undefined) {
