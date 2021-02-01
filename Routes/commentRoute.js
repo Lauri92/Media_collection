@@ -22,8 +22,8 @@ router.delete('/delete/:comment_id',
 router.post('/:media_id', passport.authenticate('jwt', {session: false}),
     [
       body('comment',
-          'must be at least three characters').
-          isLength({min: 3}).not().contains(english),
+          'must be at least three characters lon and not a naughty word!').
+          isLength({min: 3}).not().isIn(english),
       //isLength({min: 3}).not().isIn(['ass', '123', 'god']),
     ],
     commentController.add_comment);

@@ -8,7 +8,7 @@ const FileType = require('file-type');
 const uuid = require('uuid').v4;
 const fs = require('fs');
 const aws = require('aws-sdk');
-require('dotenv').config();
+
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
