@@ -1,16 +1,5 @@
 # Media Collection
 
-## Overview
-
-A place for people to share photos and videos.
-
-The application is built following the MVC software design pattern. HTTP requests from client side are handled in
-controllers which are linked into models. Models are linked into database and they return data for the controller to
-process and lastly the controller will return processed data to client side in JSON form, unless the HTTP request was
-sent to modify the database content in which case the response is in simpler form which tells if the request succeeded
-or not. Models only interact with the database and have no other functionality, they return database query results to
-controller.
-
 ## Features
 
 * Possibility to browse photos and videos posted by users.
@@ -29,12 +18,20 @@ controller.
 
 * Responsive design.
 
+## Design pattern
+
+The application is built following the MVC software design pattern. HTTP requests from client side are handled in
+controllers which are linked into models. Models are linked into database and they return data for the controller to
+process and have no other functionality, lastly the controller will return processed data to client side in JSON form if
+the request was in get form otherwise the posted data is processed by controller and updated into database via model.
+
 ## Security
 
 * Passwords are hashed by using [bcrypt.js](https://www.npmjs.com/package/bcryptjs) package
-* Authorization is tracked via JSON webtokens which are signed by using private secret key and issued to user at log
-  in. Some GET requests and all POST, PUT and DELETE requests require a json webtoken. Whenever the user wants to access
-  a protected route or resource, the user has to provide a JWT in the Authorization header using Bearer schema.
+* Authorization is tracked via JSON webtokens which are signed by using private secret key and issued to user at log in.
+  Some GET requests and all POST, PUT and DELETE requests require a json webtoken. Whenever the user wants to access a
+  protected route or resource, the user has to provide a JWT in the Authorization header using Bearer schema in order to
+  be authenticated.
 
 ## Database model for database
 
