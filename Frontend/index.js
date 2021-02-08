@@ -231,21 +231,24 @@ registerForm.addEventListener('submit', async (e) => {
     console.log(validationPass);
 
     if (validationPass) {
-      const data = await serializeJson(registerForm);
-      const fetchOptions = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      };
+      try {
+        const data = await serializeJson(registerForm);
+        const fetchOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        };
 
-      const response = await fetch(url + '/auth/register', fetchOptions);
-      const json = await response.json();
-      console.log('login response', json);
-      alert(json.message || json[0].param + ' ' + json[0].msg);
-      registerModal.style.display = 'none';
-      //TODO: Account created pop up?
+        const response = await fetch(url + '/auth/register', fetchOptions);
+        const json = await response.json();
+        console.log('login response', json);
+        alert(json.message || json[0].param + ' ' + json[0].msg);
+        registerModal.style.display = 'none';
+      } catch (e) {
+        alert('Registration failure');
+      }
     } else {
       console.log('Validation failure');
     }

@@ -8,10 +8,13 @@ const english = require('naughty-words/en.json');
 const router = express.Router();
 
 // get comments of media
-router.get('/:id', commentController.get_comments_by_pic_id);
+router.get('/:id', passport.authenticate('jwt', {session: false}),
+    commentController.get_comments_by_pic_id);
 
 // for checking owner of a comment
-router.get('/commentuserid/:comment_id', commentController.get_comment_user_id);
+router.get('/commentuserid/:comment_id',
+    passport.authenticate('jwt', {session: false}),
+    commentController.get_comment_user_id);
 
 // delete own comment or admin delete
 router.delete('/delete/:comment_id',

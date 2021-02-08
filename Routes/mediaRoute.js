@@ -27,23 +27,29 @@ const injectFile = (req, res, next) => {
 };
 
 // Get all media count
-router.get('/count', mediaController.media_count_get);
+router.get('/count', passport.authenticate('jwt', {session: false}),
+    mediaController.media_count_get);
 
 // Get all media
-router.get('/media', mediaController.media_list_get);
+router.get('/media', passport.authenticate('jwt', {session: false}),
+    mediaController.media_list_get);
 
 // Get scrolling media recent -> rows of 6
-router.get('/scroll/:limit1/:limit2', mediaController.media_scroll_list_get);
+router.get('/scroll/:limit1/:limit2',
+    passport.authenticate('jwt', {session: false}),
+    mediaController.media_scroll_list_get);
 
 // Get scrolling media likes -> rows of 6
 router.get('/scrolllikes/:limit1/:limit2',
     mediaController.media_scroll_list_get_likes);
 
 // Get all images
-router.get('/pics', mediaController.pic_list_get);
+router.get('/pics', passport.authenticate('jwt', {session: false}),
+    mediaController.pic_list_get);
 
 // Get all videos
-router.get('/videos', mediaController.video_list_get);
+router.get('/videos', passport.authenticate('jwt', {session: false}),
+    mediaController.video_list_get);
 
 // Get all media of user
 router.route('/usermedia').

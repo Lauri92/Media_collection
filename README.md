@@ -39,6 +39,13 @@ structure clearer.
   resource, the user has to provide a JWT in the Authorization header using Bearer schema in order to be authenticated.
   Lack of JSON webtoken will result in 403 error.
 
+**IMPORTANT NOTE:**
+
+* All routes are protected and therefore require a JWT. This is done so that no one can access the API unless they are
+  provided a user account by me. Also the end point for registering a new user is not active, so that I have the control
+  over who has access to application completely. I ended up with this approach so that I can minimize possible abuse
+  which could be done by some malicious individuals. This was not the original plan.
+
 ## Database model for database
 
 The implemented relational database is MariaDB. All information is stored in 5 different tables:
@@ -53,11 +60,11 @@ The implemented relational database is MariaDB. All information is stored in 5 d
 
 * Medias
     * Id,
-    * User_id (owner of the media),
+    * User_id (owner of the media)
     * Description (small description about the uploaded media)
     * Filename, Coords (*if media had exif data available*)
-    * Date (time when the media was posted), Postdate (original time when the media was
-    * taken, *if this exifdata was available*)
+    * Date (time when the media was posted), Postdate (original time when the media was taken, *if this exifdata was
+      available*)
     * Mediatype (either image or video, other types are not allowed to pass validation)
 
 * Comments
@@ -124,8 +131,8 @@ in json form where it is parsed and used to modify the DOM dynamically.
 
 Basic idea how the site behaves is that "small cards" are created in the "card container" depending what user has
 requested, show most recent, show by most likes or show by search results. These cards contain some information about
-the image which is shown in the card on a mouseover. These small cards are clickable, and when clicked they open a  "large card" which
-contains more information including description, like button, show map button and comments.
+the image which is shown in the card on a mouseover. These small cards are clickable, and when clicked they open a  "
+large card" which contains more information including description, like button, show map button and comments.
 
 ## Known issues *both user and developer in mind..*
 
@@ -135,6 +142,7 @@ contains more information including description, like button, show map button an
 * Frontpage has a button to search for other users but this button has no actual functionality.
 * Webpage has infinite scroll but the loading indicator still displays even if there is no more media to be fetched
   from. DB.
+* Side chevrons on big card have no functionality
 * More trying and catching should be implemented for those functions containing fetch. *Doesn't mean that there are many
   errors to be expected but more of try and catch wouldn't hurt*.
 * There is no admin page or any real admin interaction implemented.
@@ -144,6 +152,13 @@ contains more information including description, like button, show map button an
 * Code repetition in some places which could be avoided by refactoring
 
 ## Getting started
+
+**IMPORTANT NOTE:**
+
+* All routes are protected and therefore require a JWT. This is done so that no one can access the API unless they are
+  provided a user account by me. Also the end point for registering a new user is not active, so that I have the control
+  over who has access to application completely. I ended up with this approach so that I can minimize possible abuse
+  which could be done by some malicious individuals. This was not the original plan.
 
 Upon landing on the website user will have access to view media already posted by other users and user will also have
 access to use the search tool for searching. Non registered users won't have access to any other interactions besides

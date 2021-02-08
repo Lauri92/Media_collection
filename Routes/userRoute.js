@@ -3,6 +3,7 @@
 const express = require('express');
 const {body} = require('express-validator');
 const userController = require('../Controllers/userController');
+const passport = require('../Utils/pass');
 const router = express.Router();
 const multer = require('multer');
 const {imageFileFilter} = require('../Utils/multerUtil');
@@ -22,16 +23,19 @@ const injectFile = (req, res, next) => {
 };
 
 // Get users
-router.get('/', userController.user_list_get);
+router.get('/', passport.authenticate('jwt', {session: false}),
+    userController.user_list_get);
 
 // Get user by id
-router.get('/:id', userController.user_get_by_id);
+router.get('/:id', passport.authenticate('jwt', {session: false}),
+    userController.user_get_by_id);
 
 // Get currently logged user
 router.get('/check/userlogged', userController.check_username);
 
 // Update profilepic
 router.put('/', upload.single('profile-pic'),
+    passport.authenticate('jwt', {session: false}),
     userController.make_thumbnail,
     injectFile,
     [

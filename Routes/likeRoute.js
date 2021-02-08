@@ -6,7 +6,8 @@ const passport = require('../Utils/pass');
 const router = express.Router();
 
 // Get likes and dislikes of media
-router.get('/:id', likeController.get_likes_by_id);
+router.get('/:id', passport.authenticate('jwt', {session: false}),
+    likeController.get_likes_by_id);
 
 // Post a like
 router.post('/incrementlike/:id',
