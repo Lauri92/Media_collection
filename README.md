@@ -111,6 +111,10 @@ by [Multer](https://www.npmjs.com/package/multer), image resizing is done by
 using [Sharp](https://www.npmjs.com/package/sharp) and extracting Exif metadata
 by [Exif](https://www.npmjs.com/package/exif).
 
+**NOTE: Upon fetching an image from S3 the data is converted into base64 string, and sent to the client side. (This is not the
+fastest or most efficient way but this way the S3 bucket information stays as private as possible). This also means that
+the images and videos might load slowly. See Utils/encode.**
+
 ## Validation
 
 The application also has some backend validation. When creating an account, posting media, posting a comment or updating
