@@ -42,7 +42,7 @@ structure clearer.
 * Authorization is tracked via JSON webtokens which are signed and issued to user at log in. Some GET requests and all
   POST, PUT and DELETE requests require a JSON webtoken. Whenever the user wants to access a protected route or
   resource, the user has to provide a JWT in the Authorization header using Bearer schema in order to be authenticated.
-  Lack of JSON webtoken will result in 403 error.
+  Lack of JSON webtoken will result in 401 error.
 
 **IMPORTANT NOTE:**
 

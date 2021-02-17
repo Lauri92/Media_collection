@@ -12,7 +12,7 @@ router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
 // register a user
-
+/*
 router.post('/register',
     [
       body('name', 'minimum length 3 characters and not a naughty word!').
@@ -30,5 +30,5 @@ router.post('/register',
     ],
     authController.user_create_post,
 );
-
+*/
 module.exports = router;
