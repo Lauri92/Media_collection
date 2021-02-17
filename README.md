@@ -1,6 +1,11 @@
 # Media Collection
 
-*A simplified version of "instagram like" media sharing application.*
+##### *A simplified version of "instagram like" media sharing application.*
+
+*Note: This application is not fully "complete", some features are missing such as deleting comments or updating
+password. The purpose of this application is merely for showing key competencies which I currenly possess, i.e. it is
+not about the lack of know-how for the aforementioned but rather about the time I can commit for perfecting a single
+project, which single purpose is to show what I can currently do.*
 
 ## Features
 
@@ -111,9 +116,9 @@ by [Multer](https://www.npmjs.com/package/multer), image resizing is done by
 using [Sharp](https://www.npmjs.com/package/sharp) and extracting Exif metadata
 by [Exif](https://www.npmjs.com/package/exif).
 
-**NOTE: Upon fetching an image from S3 the data is converted into base64 string, and sent to the client side. (This is not the
-fastest or most efficient way but this way the S3 bucket information stays as private as possible). This also means that
-the images and videos might load slowly. See Utils/encode.**
+**NOTE: Upon "fetching" an image from S3 the data is converted into base64 string, and sent to the client side. (This is
+not the fastest or most efficient way but this way the S3 bucket information stays as private as possible). This also
+means that the images and videos might load slowly. See Utils/encode.**
 
 ## Validation
 
