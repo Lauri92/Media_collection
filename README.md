@@ -1,6 +1,6 @@
 # Media Collection
 
-##### *A simplified version of "instagram like" media sharing application.*
+##### *A simplified version of "instagram like" media sharing application, built with Node.js.*
 
 *Note: This application is not fully "complete", some features are missing such as deleting comments or updating
 password. The purpose of this application is merely for showing key competencies which I currenly possess, i.e. it is
