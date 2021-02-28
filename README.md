@@ -132,7 +132,7 @@ These validations include:
 * Password matching requirement (8 letters and atleast 1 capital letter).
 * Email has to be a proper email (must contain @ mark).
 
-## Front end
+## Front-end
 
 All of front end is done by using vanilla JS, no frontend libraries or frameworks are implemented. CSS is also
 completely built up from the scratch, and the app doesn't use any external CSS frameworks like bootstrap, responsiveness
@@ -144,11 +144,13 @@ requested, show most recent, show by most likes or show by search results. These
 the image which is shown in the card on a mouseover. These small cards are clickable, and when clicked they open a  "
 large card" which contains more information including description, like button, show map button and comments.
 
+####Note about React library 
 <img src="./react.png" width="100" height="100" alt="react logo">
 
 *Here is a project (although it is a little unfinished) which displays some of my capabilities with React library, the
-application is built with React native but it should provide some idea about my competence with the library in general
-and I am interested into looking to use React in web development too, not just in mobile app development*
+application is built with React native but it should provide some idea about my competence with the library in general.
+I am interested into looking to use React in web development too, not just in mobile app development.*
+*https://github.com/Lauri92/fictional-octo-umbrella/tree/development*
 
 ## Known issues *both user and developer in mind...*
 
