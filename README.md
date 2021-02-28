@@ -42,7 +42,8 @@ structure clearer.
 * Authorization is tracked via JSON webtokens which are signed and issued to user at log in. Some GET requests and all
   POST, PUT and DELETE requests require a JSON webtoken. Whenever the user wants to access a protected route or
   resource, the user has to provide a JWT in the Authorization header using Bearer schema in order to be authenticated.
-  Lack of JSON webtoken will result in 401 error.
+  Lack of JSON webtoken will result in 401 error. The token validity lasts for 15 minutes and is stored in session
+  storage and after that a new login is required.
 
 **IMPORTANT NOTE:**
 
@@ -143,7 +144,13 @@ requested, show most recent, show by most likes or show by search results. These
 the image which is shown in the card on a mouseover. These small cards are clickable, and when clicked they open a  "
 large card" which contains more information including description, like button, show map button and comments.
 
-## Known issues *both user and developer in mind..*
+<img src="./react.png" width="100" height="100" alt="react logo">
+
+*Here is a project (although it is a little unfinished) which displays some of my capabilities with React library, the
+application is built with React native but it should provide some idea about my competence with the library in general
+and I am interested into looking to use React in web development too, not just in mobile app development*
+
+## Known issues *both user and developer in mind...*
 
 * The application has a responsive design but some phone models might have issues.
 * Typing a comment with a phone is not very optimized.

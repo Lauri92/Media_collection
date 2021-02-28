@@ -302,7 +302,7 @@ addMediaForm.addEventListener('submit', async (e) => {
     alert('Media added');
   } catch (e) {
     console.error(e);
-    alert('Failed to post')
+    alert('Failed to post');
   }
 });
 
@@ -346,16 +346,31 @@ changeProfilePicForm.addEventListener('submit', async (e) => {
     document.querySelector('.cards').innerHTML = '';
     // Wait for image to be uploaded into S3...
     setTimeout(getLoggedUser, 5000);
-    alert('Profile image updated')
+    alert('Profile image updated');
   } catch (e) {
-    console.error(e)
-    alert('Error changing profile picture')
+    console.error(e);
+    alert('Error changing profile picture');
   }
 });
 
 // Logout logged user
 logoutButton.addEventListener('click', async (e) => {
   e.preventDefault();
+  doLogout();
+});
+
+// Get users images
+imageAmountButton.addEventListener('click', async () => {
+  await getUserImages();
+});
+
+// Get users videos
+videoAmountButton.addEventListener('click', async () => {
+  await getUserVideos();
+});
+
+// Handle logout
+const doLogout = async () => {
   try {
     const options = {
       headers: {
@@ -370,7 +385,7 @@ logoutButton.addEventListener('click', async (e) => {
     sessionStorage.removeItem('token');
 
     // TODO: Add prettier log out
-    alert('You have logged out');
+    alert('You have logged out or token expired');
 
     // Show login and registration buttons again
     registerButton.style.display = 'block';
@@ -383,17 +398,7 @@ logoutButton.addEventListener('click', async (e) => {
   } catch (e) {
     console.log(e.message);
   }
-});
-
-// Get users images
-imageAmountButton.addEventListener('click', async () => {
-  await getUserImages();
-});
-
-// Get users videos
-videoAmountButton.addEventListener('click', async () => {
-  await getUserVideos();
-});
+};
 
 // Function to be called when closing modals
 function closeModals() {
@@ -402,9 +407,6 @@ function closeModals() {
   deleteMediaModal.style.display = 'none';
   body.style.overflow = 'visible';
 }
-
-// Check for the token...if it exists do these
-const isToken = (sessionStorage.getItem('token'));
 
 // Create UI for the logged in user
 const createUi = async () => {
@@ -422,8 +424,6 @@ const createUi = async () => {
     console.log(e.message);
   }
 };
-
-createUi();
 
 /**
  * Functions to create media cards on the page
@@ -525,14 +525,16 @@ const createSmallCards = async (media) => {
     if (media.mediatype === 'image') {
       const smallCardMediaDeleteThumbnail = document.createElement('img');
       smallCardMediaDeleteThumbnail.id = 'smallCardMediaDeleteThumbnail';
-      smallCardMediaDeleteThumbnail.src = 'data:image/jpeg;base64,' + media.filename;
+      smallCardMediaDeleteThumbnail.src = 'data:image/jpeg;base64,' +
+          media.filename;
       const deleteMediaForm = document.querySelector('#delete-media-form');
       deleteMediaForm.insertBefore(smallCardMediaDeleteThumbnail,
           deleteMediaForm.firstChild);
     } else {
       const smallCardMediaDeleteThumbnail = document.createElement('video');
       smallCardMediaDeleteThumbnail.id = 'smallCardMediaDeleteThumbnail';
-      smallCardMediaDeleteThumbnail.src = 'data:image/jpeg;base64,' + media.filename;
+      smallCardMediaDeleteThumbnail.src = 'data:image/jpeg;base64,' +
+          media.filename;
       const deleteMediaForm = document.querySelector('#delete-media-form');
       deleteMediaForm.insertBefore(smallCardMediaDeleteThumbnail,
           deleteMediaForm.firstChild);
@@ -632,7 +634,8 @@ const createBigCard = async (media) => {
       mediaOwner.innerHTML += tag.tag + ' ';
     }
 
-    mediaOwnerProfilePic.src = 'data:image/jpeg;base64,' + media.profile_picture;
+    mediaOwnerProfilePic.src = 'data:image/jpeg;base64,' +
+        media.profile_picture;
     userInfoDiv.appendChild(mediaOwner);
     userInfoDiv.appendChild(mediaOwnerProfilePic);
 
@@ -672,7 +675,8 @@ const createBigCard = async (media) => {
       // Create img element for comment owner profile pic
       const commentOwnerProfilePic = document.createElement('img');
       commentOwnerProfilePic.className = 'comment-profile-pic';
-      commentOwnerProfilePic.src = 'data:image/jpeg;base64,' + comment.profile_picture;
+      commentOwnerProfilePic.src = 'data:image/jpeg;base64,' +
+          comment.profile_picture;
       commentContainerDiv.appendChild(commentOwnerProfilePic);
 
       // Create p element for user input date
@@ -839,7 +843,8 @@ const createBigCard = async (media) => {
           // Create img element for comment owner profile pic
           const commentOwnerProfilePic = document.createElement('img');
           commentOwnerProfilePic.className = 'comment-profile-pic';
-          commentOwnerProfilePic.src = 'data:image/jpeg;base64,' + comment.profile_picture;
+          commentOwnerProfilePic.src = 'data:image/jpeg;base64,' +
+              comment.profile_picture;
           commentContainerDiv.appendChild(commentOwnerProfilePic);
 
           // Create p element for user input date
@@ -980,3 +985,29 @@ const createBigCard = async (media) => {
     console.log(e.message);
   }
 };
+
+// Check for the token...if it exists do these
+const isToken = (sessionStorage.getItem('token'));
+const parseJwt = (isToken) => {
+  try {
+    return JSON.parse(atob(isToken.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
+if (isToken) {
+  const tokenStatus = parseJwt(isToken);
+  console.log('date now: ', Date.now() / 1000);
+  console.log('token iat:', tokenStatus.iat);
+  if (Date.now() < tokenStatus.exp * 1000) {
+    console.log('setting user in profile');
+    createUi();
+  } else {
+    console.log('expired');
+    doLogout();
+  }
+} else {
+  console.log('No token, log in plz');
+  //getAllMedia();
+}

@@ -7,9 +7,9 @@ const bcrypt = require('bcryptjs');
 
 // Handle login
 const login = (req, res) => {
-  console.log(`authController login req.body: `, req.body);
+  // console.log(`authController login req.body: `, req.body);
   passport.authenticate('local', {session: false}, (err, user, info) => {
-    console.log('authController authenticate', user);
+    // console.log('authController authenticate', user);
     if (err || !user) {
       return res.status(400).json({
         message: 'Incorrect credentials',
@@ -21,8 +21,10 @@ const login = (req, res) => {
         res.send(err);
       }
       // Generate a signed json web token with the contents of user object and return it in the response
-      // expiry time could be added too but for now the tokens exist as long as the web page is open
-      const token = jwt.sign(user, process.env.JWT/*, { expiresIn: 60 * 5 }*/);
+      // expiry time could be added too but for now the token lasts for 15 mins
+      // console.log('user', user);
+      delete user.password;
+      const token = jwt.sign(user, process.env.JWT, {expiresIn: 15 * 60});
       return res.json({user, token});
     });
   })(req, res);
@@ -58,12 +60,13 @@ const user_create_post = async (req, res, next) => {
         req.body.admin = 0;
 
         // Insert placeholder image as profile pic
-        req.body.profile_picture = 'portrait_placeholder.png'
+        req.body.profile_picture = 'portrait_placeholder.png';
 
         console.log('authController: salt and hash created, pw hashed');
 
         if (await userModel.insertUser(req)) {
-          res.status(200).json({message: 'Registration succesfull and account created'})
+          res.status(200).
+              json({message: 'Registration successful and account created'});
         } else {
           res.status(400).json({message: 'register error'});
         }

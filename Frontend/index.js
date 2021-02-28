@@ -145,37 +145,7 @@ addMediaButton.addEventListener('click', async (e) => {
 // Logout logged user
 logoutButton.addEventListener('click', async (e) => {
   e.preventDefault();
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/auth/logout', options);
-    const json = await response.json();
-    console.log(json);
-
-    // remove token
-    sessionStorage.removeItem('token');
-
-    // TODO: Add prettier log out
-    alert('You have logged out');
-
-    location.reload();
-    // Show login and registration buttons again
-    registerButton.style.display = 'block';
-    loginButton.style.display = 'block';
-    logoutButton.style.display = 'none';
-    addMediaButton.style.display = 'none';
-    profileButton.style.display = 'none';
-    document.querySelector('#profile-button img').remove();
-    document.querySelector('.cards').innerHTML = '';
-
-    //window.location.href="profilePage.html"
-
-  } catch (e) {
-    console.log(e.message);
-  }
+  await doLogout();
 });
 
 // All elements with class fa-times will get this eventlistener. (login, register, addMedia)
@@ -203,7 +173,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     const response = await fetch(url + '/auth/login', fetchOptions);
     const json = await response.json();
-    console.log('login response', json);
+    // console.log('login response', json);
 
     if (!json.user) {
       // Wrong credentials
@@ -212,7 +182,7 @@ loginForm.addEventListener('submit', async (e) => {
     } else {
       //Set token
       sessionStorage.setItem('token', json.token);
-      console.log('token: ', sessionStorage.getItem('token'));
+      // console.log('token: ', sessionStorage.getItem('token'));
       alert(`Welcome ${json.user.name}`);
       location.reload();
     }
@@ -583,6 +553,41 @@ const addMarker = async (coords) => {
   map.setZoom(7);
   marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
 };
+
+// Handle logout
+const doLogout = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/auth/logout', options);
+    const json = await response.json();
+    console.log(json);
+
+    // remove token
+    sessionStorage.removeItem('token');
+
+    // TODO: Add prettier log out
+    alert('You have logged out or token expired');
+
+    location.reload();
+    // Show login and registration buttons again
+    registerButton.style.display = 'block';
+    loginButton.style.display = 'block';
+    logoutButton.style.display = 'none';
+    addMediaButton.style.display = 'none';
+    profileButton.style.display = 'none';
+    document.querySelector('#profile-button img').remove();
+    document.querySelector('.cards').innerHTML = '';
+
+    //window.location.href="profilePage.html"
+
+  } catch (e) {
+    console.log(e.message);
+  }
+}
 
 /**
  * Functions for utility
@@ -1124,9 +1129,26 @@ const createBigCard = async (media) => {
 
 // Check for the token...if it exists do these
 const isToken = (sessionStorage.getItem('token'));
+const parseJwt = (isToken) => {
+  try {
+    return JSON.parse(atob(isToken.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
 if (isToken) {
-  getLoggedUser();
-  setUserAslogged();
+  const tokenStatus = parseJwt(isToken)
+  console.log('date now: ', Date.now() / 1000);
+  console.log('token iat:', tokenStatus.iat);
+  if(Date.now() <  tokenStatus.exp * 1000) {
+    console.log('setting user')
+    getLoggedUser();
+    setUserAslogged();
+  } else {
+    console.log('expired');
+    doLogout();
+  }
 } else {
   console.log('No token, log in plz');
   //getAllMedia();
