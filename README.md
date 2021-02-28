@@ -144,7 +144,8 @@ requested, show most recent, show by most likes or show by search results. These
 the image which is shown in the card on a mouseover. These small cards are clickable, and when clicked they open a  "
 large card" which contains more information including description, like button, show map button and comments.
 
-####Note about React library 
+#### Note about React library 
+
 <img src="./react.png" width="100" height="100" alt="react logo">
 
 *Here is a project (although it is a little unfinished) which displays some of my capabilities with React library, the
